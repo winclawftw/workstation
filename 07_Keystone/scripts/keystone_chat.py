@@ -6,8 +6,8 @@ from pathlib import Path
 
 # Support direct execution from the scripts directory without installation.
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT.parent) not in sys.path:
-    sys.path.insert(0, str(ROOT.parent))
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from keystone_core.bonsai import BonsaiModelProvider
 from keystone_core.engine import KeystoneEngine

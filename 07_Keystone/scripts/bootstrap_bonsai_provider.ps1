@@ -6,7 +6,8 @@ New-Item -ItemType Directory -Force -Path '.\keystone_core', '.\tests', '.\data'
 $files = @(
     @{ Url = 'https://raw.githubusercontent.com/winclawftw/workstation/main/07_Keystone/keystone_core/contracts.py'; Path = '.\keystone_core\contracts.py' },
     @{ Url = 'https://raw.githubusercontent.com/winclawftw/workstation/main/07_Keystone/keystone_core/bonsai.py'; Path = '.\keystone_core\bonsai.py' },
-    @{ Url = 'https://raw.githubusercontent.com/winclawftw/workstation/main/07_Keystone/tests/test_bonsai_provider.py'; Path = '.\tests\test_bonsai_provider.py' }
+    @{ Url = 'https://raw.githubusercontent.com/winclawftw/workstation/main/07_Keystone/tests/test_bonsai_provider.py'; Path = '.\tests\test_bonsai_provider.py' },
+    @{ Url = 'https://raw.githubusercontent.com/winclawftw/workstation/main/07_Keystone/scripts/test_bonsai_live.py'; Path = '.\scripts\test_bonsai_live.py' }
 )
 
 foreach ($file in $files) {
@@ -28,12 +29,16 @@ python -m unittest discover -s tests -v
 $testExit = $LASTEXITCODE
 
 Write-Host "`n=== PYTHON COMPILE CHECK ==="
-python -m compileall -q keystone_core tests
+python -m compileall -q keystone_core tests scripts
 $compileExit = $LASTEXITCODE
+
+Write-Host "`n=== LIVE BONSAI SERVER TEST ==="
+python .\scripts\test_bonsai_live.py
+$liveExit = $LASTEXITCODE
 
 Write-Host "`n=== GIT STATUS (READ ONLY) ==="
 git status --short -- 07_Keystone
 
-Write-Host "`nRESULT: unittest=$testExit compileall=$compileExit"
-if ($testExit -ne 0 -or $compileExit -ne 0) { exit 1 }
+Write-Host "`nRESULT: unittest=$testExit compileall=$compileExit live_bonsai=$liveExit"
+if ($testExit -ne 0 -or $compileExit -ne 0 -or $liveExit -ne 0) { exit 1 }
 exit 0

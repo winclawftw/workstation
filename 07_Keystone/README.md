@@ -41,7 +41,7 @@ The CLI checks Bonsai health before accepting messages. Session history includes
 - `/clear` — clear current conversation only.
 - `/exit` — close Keystone.
 
-Project IDs are 12 lowercase hexadecimal characters. Project names and filenames are validated. Project and artifact writes stay under the local data root; symlinked workspace directories are rejected. No file is saved unless the user enters the artifact command.
+Project IDs are 12 lowercase hexadecimal characters. Project names and filenames are validated. Project and artifact writes stay under the local data root; reparse-point workspace directories are rejected. On Windows, each operation verifies the opened directory handle and holds it with delete sharing disabled while using paths inside it, so the directory cannot be renamed or replaced during that operation. Project JSON is also opened without following a final reparse point. This race protection is tested on Windows 11 with NTFS; other platforms currently retain path checks but do not have the same race-resistant guarantee. No file is saved unless the user enters the artifact command.
 
 ## Local data
 

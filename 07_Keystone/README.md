@@ -33,7 +33,7 @@ The CLI checks Bonsai health before accepting messages. Session history includes
 - `/status` — check local provider health.
 - `/models` — list model IDs exposed by Bonsai.
 - `/project new <name>` — create and open a local project.
-- `/project list` — list saved projects; `*` marks the active project.
+- `/project list` — list valid projects; `*` marks the active project. Unreadable, oversized, or linked records produce warnings.
 - `/project open <id>` — load a project and its saved context.
 - `/project note <text>` — add a persistent project note.
 - `/project show` — show project description, notes, and artifact references.

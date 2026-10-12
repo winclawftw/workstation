@@ -33,6 +33,7 @@ class WorkspaceStore:
         self.root.mkdir(parents=True, exist_ok=True)
         self.projects_dir = self.root / "projects"
         self.artifacts_dir = self.root / "artifacts"
+        self.last_list_warnings: list[str] = []
         self._ensure_workspace_directory(self.projects_dir)
         self._ensure_workspace_directory(self.artifacts_dir)
 
@@ -108,13 +109,18 @@ class WorkspaceStore:
 
     def list_projects(self) -> list[dict[str, Any]]:
         self._ensure_workspace_directory(self.projects_dir)
+        self.last_list_warnings = []
         items = []
         for path in self.projects_dir.glob("*.json"):
             if self._is_link_or_junction(path):
+                self.last_list_warnings.append(
+                    f"{path.name}: linked project records are ignored"
+                )
                 continue
             try:
                 item = self._read_project_file(path)
-            except WorkspaceError:
+            except WorkspaceError as exc:
+                self.last_list_warnings.append(f"{path.name}: {exc}")
                 continue
             items.append(item)
         return sorted(

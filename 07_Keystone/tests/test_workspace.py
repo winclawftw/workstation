@@ -1,4 +1,7 @@
 import json
+import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,6 +17,29 @@ class WorkspaceTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.store = WorkspaceStore(Path(self.temp.name) / "data")
+
+    def _create_junction(self, link: Path, target: Path) -> None:
+        if sys.platform != "win32":
+            self.skipTest("Windows junction checks require Windows")
+        env = os.environ.copy()
+        env["KEYSTONE_JUNCTION_LINK"] = str(link)
+        env["KEYSTONE_JUNCTION_TARGET"] = str(target)
+        result = subprocess.run(
+            [
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                "New-Item -ItemType Junction -Path $env:KEYSTONE_JUNCTION_LINK "
+                "-Target $env:KEYSTONE_JUNCTION_TARGET | Out-Null",
+            ],
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        if result.returncode:
+            self.skipTest(
+                "Junction creation unavailable: " + (result.stderr or result.stdout)
+            )
 
     def test_project_and_note_persist(self):
         item = self.store.create_project("Doenerladen Konzept")
@@ -105,6 +131,53 @@ class WorkspaceTests(unittest.TestCase):
 
         self.assertEqual(self.store.get_project(item["id"]), original)
         self.assertEqual(list(self.store.projects_dir.glob("*.tmp")), [])
+
+    def test_list_projects_reports_corrupt_and_oversized_records(self):
+        item = self.store.create_project("Gültiges Projekt")
+        corrupt = self.store.projects_dir / "corrupt.json"
+        corrupt.write_text('{"id":', encoding="utf-8")
+        oversized = self.store.projects_dir / "oversized.json"
+        oversized.write_bytes(b" " * (MAX_PROJECT_RECORD_BYTES + 1))
+
+        projects = self.store.list_projects()
+
+        self.assertEqual([project["id"] for project in projects], [item["id"]])
+        self.assertEqual(len(self.store.last_list_warnings), 2)
+        self.assertTrue(
+            any("corrupt.json" in warning for warning in self.store.last_list_warnings)
+        )
+        self.assertTrue(
+            any("oversized.json" in warning for warning in self.store.last_list_warnings)
+        )
+
+    def test_junctioned_projects_directory_is_rejected_without_admin(self):
+        outside = Path(self.temp.name) / "outside-projects"
+        outside.mkdir()
+        sentinel = outside / "keep.txt"
+        sentinel.write_text("geschützt", encoding="utf-8")
+        projects = self.store.projects_dir
+        projects.rmdir()
+        self._create_junction(projects, outside)
+
+        self.assertTrue(projects.is_junction())
+        with self.assertRaises(WorkspaceError):
+            WorkspaceStore(self.store.root)
+        self.assertEqual(sentinel.read_text(encoding="utf-8"), "geschützt")
+
+    def test_junctioned_artifacts_directory_is_rejected_without_admin(self):
+        outside = Path(self.temp.name) / "outside-artifacts"
+        outside.mkdir()
+        sentinel = outside / "keep.txt"
+        sentinel.write_text("geschützt", encoding="utf-8")
+        artifacts = self.store.artifacts_dir
+        artifacts.rmdir()
+        self._create_junction(artifacts, outside)
+
+        self.assertTrue(artifacts.is_junction())
+        with self.assertRaises(WorkspaceError):
+            self.store.save_artifact("escape.md", "nicht schreiben")
+        self.assertFalse((outside / "escape.md").exists())
+        self.assertEqual(sentinel.read_text(encoding="utf-8"), "geschützt")
 
     def test_artifact_symlink_does_not_modify_external_file(self):
         outside = Path(self.temp.name) / "outside.md"

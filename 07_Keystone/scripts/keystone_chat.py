@@ -82,10 +82,13 @@ def main() -> int:
             continue
         if lower == "/project list":
             projects = workspace.list_projects()
-            if not projects: print("No projects yet. Use /project new <name>.")
+            if not projects and not workspace.last_list_warnings:
+                print("No projects yet. Use /project new <name>.")
             for item in projects:
                 mark = "*" if active and item["id"] == active["id"] else " "
                 print(f"{mark} {item['id']}  {item['name']}")
+            for warning in workspace.last_list_warnings:
+                print("Warning: skipped project record:", warning)
             continue
         if lower.startswith("/project new "):
             try:

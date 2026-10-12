@@ -11,11 +11,26 @@ from keystone_core.bonsai import BonsaiModelProvider
 from keystone_core.engine import KeystoneEngine
 from keystone_core.workspace import WorkspaceError, WorkspaceStore
 
+MAX_HISTORY_MESSAGES = 16
+
 SYSTEM_PROMPT = """You are Keystone, a practical local-first work assistant.
 Be direct and collaborative. Ask only the next important question, and state
-reasonable assumptions when helpful. You cannot directly save files; only the
-local workspace commands can do that. Do not claim a file was saved unless the
-application confirms it. No cloud fallback."""
+reasonable assumptions transparently when helpful. Use the active project's
+description and notes as context. Do not invent business facts, decisions, or
+prices; leave unknowns open. You cannot directly save files or execute tools;
+only explicit local workspace commands perform file operations. Never claim an
+action succeeded unless the application confirms it. No cloud fallback."""
+
+
+def append_history_turn(
+    history: list[dict[str, str]], user_text: str, assistant_text: str
+) -> list[dict[str, str]]:
+    """Return session history capped at the newest 16 user/assistant messages."""
+    return [
+        *history,
+        {"role": "user", "content": user_text},
+        {"role": "assistant", "content": assistant_text},
+    ][-MAX_HISTORY_MESSAGES:]
 
 
 def main() -> int:
@@ -67,15 +82,19 @@ def main() -> int:
             continue
         if lower == "/project list":
             projects = workspace.list_projects()
-            if not projects: print("No projects yet. Use /project new <name>.")
+            if not projects and not workspace.last_list_warnings:
+                print("No projects yet. Use /project new <name>.")
             for item in projects:
                 mark = "*" if active and item["id"] == active["id"] else " "
                 print(f"{mark} {item['id']}  {item['name']}")
+            for warning in workspace.last_list_warnings:
+                print("Warning: skipped project record:", warning)
             continue
         if lower.startswith("/project new "):
             try:
                 active = workspace.create_project(prompt[len("/project new "):].strip())
                 history.clear()
+                last_reply = ""
                 print(f"Created and opened: {active['name']} (ID {active['id']})")
             except WorkspaceError as exc: print("Project error:", exc)
             continue
@@ -83,6 +102,7 @@ def main() -> int:
             try:
                 active = workspace.get_project(prompt[len("/project open "):].strip())
                 history.clear()
+                last_reply = ""
                 print(f"Opened: {active['name']} (ID {active['id']})")
             except WorkspaceError as exc: print("Project error:", exc)
             continue
@@ -91,8 +111,18 @@ def main() -> int:
             else:
                 print(f"{active['name']} [{active['id']}]")
                 print(active.get("description") or "(no description)")
-                print(f"Notes: {len(active['notes'])} | Artifacts: {len(active['artifacts'])}")
-                for item in active["artifacts"]: print(" -", item["filename"], item["path"])
+                print("\nNotes:")
+                if active["notes"]:
+                    for item in active["notes"]:
+                        print(f" - [{item.get('created_at', 'unknown time')}] {item['text']}")
+                else:
+                    print(" (none)")
+                print("Artifacts:")
+                if active["artifacts"]:
+                    for item in active["artifacts"]:
+                        print(" -", item["filename"], item["path"])
+                else:
+                    print(" (none)")
             continue
         if lower.startswith("/project note "):
             if not active:
@@ -121,12 +151,10 @@ def main() -> int:
             project_context = (f"Active project: {active['name']} (ID {active['id']})\n"
                 f"Description: {active.get('description') or '(none)'}\nProject notes:\n{notes or '(none)'}")
         try:
-            reply = engine.respond(prompt, history=history[-16:],
+            reply = engine.respond(prompt, history=history[-MAX_HISTORY_MESSAGES:],
                 system_prompt=SYSTEM_PROMPT + "\n\n" + project_context)
             last_reply = reply.text
-            history.extend([{"role": "user", "content": prompt},
-                            {"role": "assistant", "content": reply.text}])
-            history = history[-16:]
+            history = append_history_turn(history, prompt, reply.text)
             print(f"\nKeystone [{reply.provider}] > {reply.text}\n")
         except Exception as exc:
             print(f"\nRequest failed: {type(exc).__name__}: {exc}\n")

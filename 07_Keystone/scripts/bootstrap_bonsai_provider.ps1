@@ -3,13 +3,8 @@ Set-Location 'C:\Einrichtung\07_Keystone'
 
 New-Item -ItemType Directory -Force -Path '.\keystone_core', '.\tests', '.\data', '.\scripts' | Out-Null
 
-$contracts = @'
-class ModelUnavailable(RuntimeError):
-    """Raised when a model provider cannot be reached or used."""
-'@
-Set-Content -LiteralPath '.\keystone_core\contracts.py' -Value $contracts -Encoding utf8
-
 $files = @(
+    @{ Url = 'https://raw.githubusercontent.com/winclawftw/workstation/main/07_Keystone/keystone_core/contracts.py'; Path = '.\keystone_core\contracts.py' },
     @{ Url = 'https://raw.githubusercontent.com/winclawftw/workstation/main/07_Keystone/keystone_core/bonsai.py'; Path = '.\keystone_core\bonsai.py' },
     @{ Url = 'https://raw.githubusercontent.com/winclawftw/workstation/main/07_Keystone/tests/test_bonsai_provider.py'; Path = '.\tests\test_bonsai_provider.py' }
 )
@@ -17,6 +12,7 @@ $files = @(
 foreach ($file in $files) {
     Write-Host "Fetching $($file.Path) ..."
     Invoke-WebRequest -Uri $file.Url -OutFile $file.Path
+    if (-not (Test-Path -LiteralPath $file.Path)) { throw "Download failed: $($file.Path)" }
 }
 
 if (-not (Test-Path '.\keystone_core\__init__.py')) {

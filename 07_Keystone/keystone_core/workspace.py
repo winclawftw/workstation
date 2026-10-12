@@ -14,6 +14,9 @@ class WorkspaceError(ValueError):
     """A workspace operation was invalid or could not be completed safely."""
 
 
+MAX_PROJECT_RECORD_BYTES = 1_000_000
+
+
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -84,9 +87,16 @@ class WorkspaceStore:
     def _write(self, item: dict[str, Any]) -> None:
         path = self._project_path(item.get("id"))
         temporary = self.projects_dir / f".{item['id']}.{uuid.uuid4().hex}.tmp"
-        payload = json.dumps(item, ensure_ascii=False, indent=2) + "\n"
         try:
-            with temporary.open("x", encoding="utf-8", newline="\n") as stream:
+            payload = (json.dumps(item, ensure_ascii=False, indent=2) + "\n").encode(
+                "utf-8"
+            )
+        except (TypeError, ValueError, UnicodeError) as exc:
+            raise WorkspaceError("Project record could not be encoded safely") from exc
+        if len(payload) > MAX_PROJECT_RECORD_BYTES:
+            raise WorkspaceError("Project record exceeds 1 MB")
+        try:
+            with temporary.open("xb") as stream:
                 stream.write(payload)
             temporary.replace(path)
         except (OSError, TypeError, ValueError) as exc:
@@ -115,10 +125,14 @@ class WorkspaceStore:
 
     def _read_project_file(self, path: Path) -> dict[str, Any]:
         try:
-            item = json.loads(path.read_text(encoding="utf-8"))
+            with path.open("rb") as stream:
+                payload = stream.read(MAX_PROJECT_RECORD_BYTES + 1)
+            if len(payload) > MAX_PROJECT_RECORD_BYTES:
+                raise WorkspaceError("Project record exceeds 1 MB")
+            item = json.loads(payload.decode("utf-8"))
         except FileNotFoundError as exc:
             raise WorkspaceError(f"Project not found: {path.stem}") from exc
-        except (OSError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError, RecursionError) as exc:
             raise WorkspaceError("Project record is unreadable") from exc
         if not isinstance(item, dict) or item.get("id") != path.stem:
             raise WorkspaceError("Invalid project record")

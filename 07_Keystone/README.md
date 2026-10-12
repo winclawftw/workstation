@@ -48,6 +48,7 @@ Project IDs are 12 lowercase hexadecimal characters. Project names and filenames
 - Project JSON: `C:\Einrichtung\07_Keystone\data\projects\<id>.json`
 - Markdown artifacts: `C:\Einrichtung\07_Keystone\data\artifacts\`
 - Project JSON stores the ID, name, description, creation/update timestamps, notes, and artifact references.
+- Project JSON is limited to 1 MB; unreadable, malformed, deeply nested, or oversized records return a workspace error instead of being loaded without a bound.
 - Conversation history is in memory only; it is not persisted between CLI sessions.
 - No database server is used.
 

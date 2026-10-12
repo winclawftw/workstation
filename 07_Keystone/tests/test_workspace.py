@@ -2,7 +2,11 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
-from keystone_core.workspace import WorkspaceError, WorkspaceStore
+from keystone_core.workspace import (
+    MAX_PROJECT_RECORD_BYTES,
+    WorkspaceError,
+    WorkspaceStore,
+)
 
 
 class WorkspaceTests(unittest.TestCase):
@@ -60,6 +64,47 @@ class WorkspaceTests(unittest.TestCase):
         )
         with self.assertRaises(WorkspaceError):
             self.store.get_project(item["id"])
+
+    def test_malformed_json_returns_workspace_error_without_changing_file(self):
+        item = self.store.create_project("Beschädigtes JSON")
+        path = self.store.projects_dir / f"{item['id']}.json"
+        path.write_text('{"id":', encoding="utf-8")
+        original = path.read_bytes()
+
+        with self.assertRaises(WorkspaceError):
+            self.store.get_project(item["id"])
+
+        self.assertEqual(path.read_bytes(), original)
+
+    def test_deeply_nested_json_returns_workspace_error(self):
+        item = self.store.create_project("Tief verschachtelt")
+        path = self.store.projects_dir / f"{item['id']}.json"
+        path.write_text("[" * 2000 + "0" + "]" * 2000, encoding="utf-8")
+
+        with self.assertRaises(WorkspaceError):
+            self.store.get_project(item["id"])
+
+    def test_oversized_project_json_is_rejected_with_bounded_read(self):
+        item = self.store.create_project("Zu groß")
+        path = self.store.projects_dir / f"{item['id']}.json"
+        path.write_bytes(b" " * (MAX_PROJECT_RECORD_BYTES + 1))
+        original_size = path.stat().st_size
+
+        with self.assertRaises(WorkspaceError):
+            self.store.get_project(item["id"])
+
+        self.assertEqual(path.stat().st_size, original_size)
+
+    def test_oversized_project_write_preserves_existing_record(self):
+        item = self.store.create_project("Geschützt")
+        original = self.store.get_project(item["id"])
+        oversized = {**item, "extra": "x" * MAX_PROJECT_RECORD_BYTES}
+
+        with self.assertRaises(WorkspaceError):
+            self.store._write(oversized)
+
+        self.assertEqual(self.store.get_project(item["id"]), original)
+        self.assertEqual(list(self.store.projects_dir.glob("*.tmp")), [])
 
     def test_artifact_symlink_does_not_modify_external_file(self):
         outside = Path(self.temp.name) / "outside.md"

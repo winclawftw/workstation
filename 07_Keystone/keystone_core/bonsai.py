@@ -55,7 +55,6 @@ class BonsaiModelProvider:
             json.JSONDecodeError,
             UnicodeDecodeError,
         ) as exc:
-            # Keep the stable Keystone error type while avoiding payload/response leaks.
             raise ModelUnavailable(
                 f"Bonsai request failed ({type(exc).__name__}) for {path}"
             ) from exc
@@ -65,7 +64,7 @@ class BonsaiModelProvider:
         return body
 
     def capabilities(self) -> set[str]:
-        return {"local", "generate", "list_models", "health"}
+        return {"local", "generate", "generate_messages", "list_models", "health"}
 
     def health(self) -> dict[str, Any]:
         result = self._request_json("/health")
@@ -82,19 +81,40 @@ class BonsaiModelProvider:
         models = result.get("data")
         if not isinstance(models, list):
             raise ModelUnavailable("Bonsai model listing did not contain a data list")
-        model_ids = [
+        return [
             item["id"]
             for item in models
             if isinstance(item, dict) and isinstance(item.get("id"), str)
         ]
-        return model_ids
 
     def generate(self, prompt: str, *, model: str | None = None) -> str:
+        if not isinstance(prompt, str) or not prompt.strip():
+            raise ValueError("prompt must be a non-empty string")
+        return self.generate_messages(
+            [{"role": "user", "content": prompt.strip()}], model=model
+        )
+
+    def generate_messages(
+        self, messages: list[dict[str, str]], *, model: str | None = None
+    ) -> str:
+        """Generate from a validated chat history, preserving role and order."""
+        if not isinstance(messages, list) or not messages:
+            raise ValueError("messages must be a non-empty list")
+        allowed_roles = {"system", "user", "assistant"}
+        safe_messages: list[dict[str, str]] = []
+        for message in messages:
+            if not isinstance(message, dict):
+                raise ValueError("each message must be an object")
+            role, content = message.get("role"), message.get("content")
+            if role not in allowed_roles or not isinstance(content, str) or not content.strip():
+                raise ValueError("messages require an allowed role and non-empty content")
+            safe_messages.append({"role": role, "content": content})
+
         result = self._request_json(
             "/v1/chat/completions",
             payload={
                 "model": model or self.default_model,
-                "messages": [{"role": "user", "content": prompt}],
+                "messages": safe_messages,
                 "stream": False,
             },
             timeout=max(self.timeout, self.generation_timeout),
@@ -107,6 +127,5 @@ class BonsaiModelProvider:
             raise ModelUnavailable("Bonsai completion did not contain a message")
         content = message.get("content")
         if not isinstance(content, str) or not content.strip():
-            # Deliberately do not expose reasoning_content as user-facing output.
             raise ModelUnavailable("Bonsai returned no user-facing message content")
         return content

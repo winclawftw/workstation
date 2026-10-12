@@ -1,6 +1,6 @@
 # Bonsai 2 Model Provider (Experimental)
 
-**Status:** local smoke-tested; not yet implemented as a Keystone provider.
+**Status:** adapter code and focused unit tests are committed; workstation test execution and orchestration integration remain pending.
 **Purpose:** qualify Bonsai 2 as an optional local inference backend for the Workstation Adobe-first Keystone system.
 
 ## Decision
@@ -97,15 +97,15 @@ Do not promote `reasoning_content` to user-facing content. For the first adapter
 
 ## Implementation sequence
 
-1. Add `BonsaiModelProvider` conforming to the existing `ModelProvider` protocol.
-2. Add focused unit tests for health, model discovery, text generation, and failure mapping.
-3. Run the existing Keystone test suite and Gate 6 smoke test to guard current behavior.
-4. Register Bonsai as an optional provider only after those checks pass.
+1. **Done in GitHub:** add `keystone_core/bonsai.py` implementing the existing text-only `ModelProvider` contract.
+2. **Done in GitHub:** add `tests/test_bonsai_provider.py` for health, model discovery, text generation, empty-content handling, and transport/schema errors.
+3. **Next:** run the new tests and the existing Keystone suite in the workstation's Python environment; fix any failures before integration.
+4. Register Bonsai as an optional provider only after those checks pass and after the runtime/model routing boundary is clarified.
 5. Extend contracts for structured chat, image input, and tool-call proposals separately; keep vision/tool calling experimental until then.
 
 ## Not claimed yet
 
-- No Bonsai adapter has been implemented in Keystone.
+- The Bonsai adapter and focused tests are committed, but have not yet been verified by running the suite on the workstation.
 - No model-driven multi-step tool loop has been tested.
 - No full Adobe workflow benchmark has been run.
 - The 262K training context is not the serving limit; current server context was 32K.

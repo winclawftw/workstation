@@ -1,0 +1,10 @@
+{
+  "version": "0.34.1",
+  "installation": "C:\\Einrichtung\\05_AI\\ollama",
+  "endpoint": "http://127.0.0.1:11434",
+  "autostart_configured": false,
+  "model_storage": "C:\\Einrichtung\\05_AI\\models",
+  "test_model": "tinyllama:1.1b-chat",
+  "gpu_processor": "100% GPU",
+  "cloud_provider_configured": false
+}

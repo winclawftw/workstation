@@ -1,0 +1,7 @@
+Gate 5 Hermes model test — 2026-09-16
+Ollama API: 0.34.1
+Initial model: tinyllama:1.1b-chat; direct Ollama inference reachable, but Hermes rejected it because context=2048 and tools are unsupported.
+Compatibility model: llama3.2:3b; local Ollama model, context_length=131072, Q4_K_M, approximately 2.0 GB.
+Hermes endpoint: custom OpenAI-compatible endpoint http://172.31.32.1:11434/v1
+Hermes model test: PASS; local Hermes/Ollama invocation completed with exit 0.
+Cloud/API key use: none.

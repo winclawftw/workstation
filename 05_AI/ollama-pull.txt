@@ -1,0 +1,94 @@
+[1Gpulling manifest ⠋ [K[1Gpulling manifest ⠙ [K[1Gpulling manifest ⠹ [K[1Gpulling manifest ⠸ [K[1Gpulling manifest ⠼ [K[1Gpulling manifest ⠴ [K[1Gpulling manifest ⠦ [K[1Gpulling manifest ⠧ [K[1Gpulling manifest ⠇ [K[1Gpulling manifest ⠏ [K[1Gpulling manifest ⠋ [K[1Gpulling manifest ⠙ [K[1Gpulling manifest [K
+pulling 2af3b81862c6:   1% ▕                  ▏ 7.9 MB/637 MB                  [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:   2% ▕                  ▏  14 MB/637 MB                  [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:   4% ▕                  ▏  28 MB/637 MB                  [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:   7% ▕█                 ▏  42 MB/637 MB                  [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:   8% ▕█                 ▏  49 MB/637 MB                  [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  10% ▕█                 ▏  62 MB/637 MB                  [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  12% ▕██                ▏  76 MB/637 MB                  [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  13% ▕██                ▏  83 MB/637 MB                  [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  15% ▕██                ▏  97 MB/637 MB                  [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  17% ▕███               ▏ 111 MB/637 MB                  [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  18% ▕███               ▏ 117 MB/637 MB  116 MB/s      4s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  21% ▕███               ▏ 131 MB/637 MB  116 MB/s      4s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  23% ▕████              ▏ 145 MB/637 MB  116 MB/s      4s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  24% ▕████              ▏ 152 MB/637 MB  116 MB/s      4s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  26% ▕████              ▏ 166 MB/637 MB  116 MB/s      4s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  28% ▕█████             ▏ 179 MB/637 MB  116 MB/s      3s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  29% ▕█████             ▏ 186 MB/637 MB  116 MB/s      3s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  31% ▕█████             ▏ 200 MB/637 MB  116 MB/s      3s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  34% ▕██████            ▏ 214 MB/637 MB  116 MB/s      3s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  35% ▕██████            ▏ 221 MB/637 MB  116 MB/s      3s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  37% ▕██████            ▏ 234 MB/637 MB  116 MB/s      3s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  39% ▕███████           ▏ 248 MB/637 MB  116 MB/s      3s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  40% ▕███████           ▏ 255 MB/637 MB  116 MB/s      3s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  42% ▕███████           ▏ 269 MB/637 MB  116 MB/s      3s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  44% ▕███████           ▏ 282 MB/637 MB  116 MB/s      3s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  45% ▕████████          ▏ 289 MB/637 MB  116 MB/s      2s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  48% ▕████████          ▏ 303 MB/637 MB  116 MB/s      2s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  50% ▕████████          ▏ 317 MB/637 MB  116 MB/s      2s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  51% ▕█████████         ▏ 324 MB/637 MB  116 MB/s      2s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  53% ▕█████████         ▏ 337 MB/637 MB  116 MB/s      2s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  55% ▕█████████         ▏ 351 MB/637 MB  116 MB/s      2s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  56% ▕██████████        ▏ 358 MB/637 MB  116 MB/s      2s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  58% ▕██████████        ▏ 372 MB/637 MB  116 MB/s      2s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  61% ▕██████████        ▏ 386 MB/637 MB  116 MB/s      2s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  62% ▕███████████       ▏ 392 MB/637 MB  116 MB/s      2s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  64% ▕███████████       ▏ 406 MB/637 MB  116 MB/s      1s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  66% ▕███████████       ▏ 420 MB/637 MB  116 MB/s      1s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  67% ▕████████████      ▏ 427 MB/637 MB  116 MB/s      1s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  69% ▕████████████      ▏ 440 MB/637 MB  116 MB/s      1s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  71% ▕████████████      ▏ 454 MB/637 MB  116 MB/s      1s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  72% ▕█████████████     ▏ 461 MB/637 MB  116 MB/s      1s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  74% ▕█████████████     ▏ 475 MB/637 MB  116 MB/s      1s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  77% ▕█████████████     ▏ 488 MB/637 MB  116 MB/s      1s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  78% ▕█████████████     ▏ 495 MB/637 MB  116 MB/s      1s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  80% ▕██████████████    ▏ 509 MB/637 MB  116 MB/s      1s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  82% ▕██████████████    ▏ 523 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  83% ▕██████████████    ▏ 530 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  85% ▕███████████████   ▏ 543 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  87% ▕███████████████   ▏ 557 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  89% ▕███████████████   ▏ 564 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  91% ▕████████████████  ▏ 577 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  93% ▕████████████████  ▏ 591 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  94% ▕████████████████  ▏ 597 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  95% ▕█████████████████ ▏ 608 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  96% ▕█████████████████ ▏ 615 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  97% ▕█████████████████ ▏ 618 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6:  98% ▕█████████████████ ▏ 626 MB/637 MB  116 MB/s      0s[K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K
+verifying sha256 digest ⠋ [K[A[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K
+verifying sha256 digest ⠙ [K[A[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K
+verifying sha256 digest ⠹ [K[A[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K
+verifying sha256 digest ⠸ [K[A[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K
+verifying sha256 digest ⠼ [K[A[A[1Gpulling manifest [K
+pulling 2af3b81862c6: 100% ▕██████████████████▏ 637 MB                         [K
+verifying sha256 digest [K
+writing manifest [K
+success [K

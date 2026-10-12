@@ -1,0 +1,6 @@
+NVIDIA DRIVER STATE
+Current: 591.86
+GPU: NVIDIA GeForce RTX 3090 Ti
+Status: Windows nvidia-smi PASS; WSL nvidia-smi PASS; Ollama GPU retest PASS
+Official source checked: https://www.nvidia.com/en-us/drivers/
+Decision: KEEP; official page did not expose a reliable dynamic product-specific latest version in this check, and no blind update is justified.

@@ -1,0 +1,37 @@
+GATE 4 — GPU / NVIDIA / LOCAL AI FOUNDATION
+Timestamp: 2026-09-16 06:50 local
+
+Windows:
+- Windows 11 Pro: PASS (Win32 caption; build 26200)
+- RTX 3090 Ti: PASS
+- NVIDIA Driver: PASS — 591.86
+- nvidia-smi: PASS
+
+WSL:
+- WSL2: PASS
+- Ubuntu 24.04 LTS: PASS — Ubuntu 24.04.5 LTS
+- GPU passthrough: PASS
+- WSL nvidia-smi: PASS
+
+Local AI:
+- Ollama: PASS — 0.34.1, manually started on localhost
+- GPU detection: PASS — ollama ps reports 100% GPU
+- Test inference: PASS — tinyllama:1.1b-chat
+- GPU memory evidence: PASS — approximately 1724 MiB used during inference
+- Cloud provider: DISABLED / NOT CONFIGURED
+
+Storage:
+- Samsung SSD: UNCHANGED except scoped setup files and Ollama files under C:\Einrichtung
+- ADATA SX8200PNP: UNCHANGED
+- Partitioning/formatting: NONE
+- Bootloader/BCD: NONE
+
+Documentation:
+- GPU report: C:\Einrichtung\05_AI\gpu-precheck.txt
+- WSL GPU report: C:\Einrichtung\05_AI\wsl-gpu-test.txt
+- Ollama report: C:\Einrichtung\05_AI\ollama-test.txt
+- Gate 4 report: C:\Einrichtung\05_AI\gate4-report.txt
+
+Gate 4: PASS
+Next: Gate 5 — Runtime / Hermes foundation (not executed)
+STOP — no Gate 5 components were installed.

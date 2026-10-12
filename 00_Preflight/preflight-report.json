@@ -1,0 +1,2871 @@
+{
+  "timestamp": "2026-09-16T06:16:54.7990164+02:00",
+  "phase": "Gate0-Preflight",
+  "admin": false,
+  "os": {
+    "WindowsProductName": "Windows 10 Pro",
+    "WindowsVersion": "2009",
+    "OsBuildNumber": "26200",
+    "OsArchitecture": "64-Bit",
+    "WindowsInstallDateFromRegistry": "2026-09-15T22:09:43"
+  },
+  "hardware": {
+    "cpu": {
+      "Name": "AMD Ryzen 7 7800X3D 8-Core Processor           ",
+      "NumberOfCores": 8,
+      "NumberOfLogicalProcessors": 16
+    },
+    "bios": {
+      "SMBIOSBIOSVersion": "1.L3",
+      "ReleaseDate": "2026-09-10T02:00:00+02:00"
+    },
+    "board": {
+      "Manufacturer": "Micro-Star International Co., Ltd.",
+      "Product": "MPG B650 CARBON WIFI (MS-7D74)",
+      "SerialNumber": "07D7411_M91E668159"
+    },
+    "ram_gb": 30.88,
+    "gpu": [
+      {
+        "Name": "AMD Radeon(TM) Graphics",
+        "AdapterRAM": 536870912,
+        "DriverVersion": "32.0.21030.2001",
+        "DriverDate": "2025-09-25T02:00:00+02:00"
+      },
+      {
+        "Name": "NVIDIA GeForce RTX 3090 Ti",
+        "AdapterRAM": 4293918720,
+        "DriverVersion": "32.0.15.9186",
+        "DriverDate": "2026-01-20T01:00:00+01:00"
+      }
+    ]
+  },
+  "disks": [
+    {
+      "number": 1,
+      "model": "ADATA SX8200PNP",
+      "serial": "2J5020035211        _00000001.",
+      "bus_type": "NVMe",
+      "partition_style": "GPT",
+      "size_gb": 953.87,
+      "is_boot": false,
+      "is_system": true,
+      "operational_status": "Online"
+    },
+    {
+      "number": 0,
+      "model": "Samsung SSD 970 EVO Plus 2TB",
+      "serial": "0025_385A_01B3_5EF0.",
+      "bus_type": "NVMe",
+      "partition_style": "GPT",
+      "size_gb": 1863.02,
+      "is_boot": true,
+      "is_system": false,
+      "operational_status": "Online"
+    }
+  ],
+  "volumes": [
+    {
+      "DriveLetter": "C",
+      "FileSystemLabel": "",
+      "FileSystem": "NTFS",
+      "size_gb": 1862.11,
+      "free_gb": 1795.36
+    },
+    {
+      "DriveLetter": null,
+      "FileSystemLabel": "",
+      "FileSystem": "NTFS",
+      "size_gb": 0.73,
+      "free_gb": 0.11
+    },
+    {
+      "DriveLetter": null,
+      "FileSystemLabel": "",
+      "FileSystem": "NTFS",
+      "size_gb": 953.02,
+      "free_gb": 562.33
+    },
+    {
+      "DriveLetter": null,
+      "FileSystemLabel": "",
+      "FileSystem": "NTFS",
+      "size_gb": 0.89,
+      "free_gb": 0.11
+    }
+  ],
+  "commands": {
+    "npm": null,
+    "node": "v24.19.0",
+    "code": null,
+    "docker": null,
+    "wsl": "W\u0000S\u0000L\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00002\u0000.\u00007\u0000.\u00001\u00004\u0000.\u00000\u0000\r\n\u0000\r\n\u0000K\u0000e\u0000r\u0000n\u0000e\u0000l\u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00006\u0000.\u00001\u00008\u0000.\u00003\u00003\u0000.\u00002\u0000-\u00002\u0000\r\n\u0000\r\n\u0000W\u0000S\u0000L\u0000g\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00000\u0000.\u00007\u00003\u0000.\u00002\u0000\r\n\u0000\r\n\u0000M\u0000S\u0000R\u0000D\u0000C\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00002\u0000.\u00007\u00002\u00001\u00004\u0000\r\n\u0000\r\n\u0000D\u0000i\u0000r\u0000e\u0000c\u0000t\u00003\u0000D\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00006\u00001\u00001\u0000.\u00001\u0000-\u00008\u00001\u00005\u00002\u00008\u00005\u00001\u00001\u0000\r\n\u0000\r\n\u0000D\u0000X\u0000C\u0000o\u0000r\u0000e\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u00000\u0000.\u00000\u0000.\u00002\u00006\u00001\u00000\u00000\u0000.\u00001\u0000-\u00002\u00004\u00000\u00003\u00003\u00001\u0000-\u00001\u00004\u00003\u00005\u0000.\u0000g\u0000e\u0000-\u0000r\u0000e\u0000l\u0000e\u0000a\u0000s\u0000e\u0000\r\n\u0000\r\n\u0000W\u0000i\u0000n\u0000d\u0000o\u0000w\u0000s\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u00000\u0000.\u00000\u0000.\u00002\u00006\u00002\u00000\u00000\u0000.\u00009\u00004\u00005\u00007\u0000\r\n\u0000\r\n\u0000",
+    "winget": "v1.29.290",
+    "py": null,
+    "pwsh": "PowerShell 7.6.5",
+    "git": "git version 2.53.0.windows.3",
+    "7z": null,
+    "ffmpeg": null,
+    "ffprobe": null,
+    "python": "Python was not found; run without arguments to install from the Microsoft Store, or disable this shortcut from Settings > Apps > Advanced app settings > App execution aliases."
+  },
+  "virtualization": {
+    "wsl_list": "W\u0000i\u0000n\u0000d\u0000o\u0000w\u0000s\u0000-\u0000S\u0000u\u0000b\u0000s\u0000y\u0000s\u0000t\u0000e\u0000m\u0000 \u0000f\u0000�\u0000r\u0000 \u0000L\u0000i\u0000n\u0000u\u0000x\u0000 \u0000v\u0000e\u0000r\u0000f\u0000�\u0000g\u0000t\u0000 \u0000�\u0000b\u0000e\u0000r\u0000 \u0000k\u0000e\u0000i\u0000n\u0000e\u0000 \u0000i\u0000n\u0000s\u0000t\u0000a\u0000l\u0000l\u0000i\u0000e\u0000r\u0000t\u0000e\u0000n\u0000 \u0000D\u0000i\u0000s\u0000t\u0000r\u0000i\u0000b\u0000u\u0000t\u0000i\u0000o\u0000n\u0000e\u0000n\u0000.\u0000\r\n\u0000\r\n\u0000S\u0000i\u0000e\u0000 \u0000k\u0000�\u0000n\u0000n\u0000e\u0000n\u0000 \u0000d\u0000i\u0000e\u0000s\u0000 \u0000b\u0000e\u0000h\u0000e\u0000b\u0000e\u0000n\u0000,\u0000 \u0000i\u0000n\u0000d\u0000e\u0000m\u0000 \u0000S\u0000i\u0000e\u0000 \u0000e\u0000i\u0000n\u0000e\u0000 \u0000D\u0000i\u0000s\u0000t\u0000r\u0000i\u0000b\u0000u\u0000t\u0000i\u0000o\u0000n\u0000 \u0000m\u0000i\u0000t\u0000 \u0000d\u0000e\u0000n\u0000 \u0000f\u0000o\u0000l\u0000g\u0000e\u0000n\u0000d\u0000e\u0000n\u0000 \u0000A\u0000n\u0000w\u0000e\u0000i\u0000s\u0000u\u0000n\u0000g\u0000e\u0000n\u0000 \u0000i\u0000n\u0000s\u0000t\u0000a\u0000l\u0000l\u0000i\u0000e\u0000r\u0000e\u0000n\u0000:\u0000\r\n\u0000\r\n\u0000\r\n\u0000\r\n\u0000\"\u0000w\u0000s\u0000l\u0000.\u0000e\u0000x\u0000e\u0000 \u0000-\u0000-\u0000l\u0000i\u0000s\u0000t\u0000 \u0000-\u0000-\u0000o\u0000n\u0000l\u0000i\u0000n\u0000e\u0000'\u0000 \u0000z\u0000u\u0000m\u0000 \u0000A\u0000u\u0000f\u0000l\u0000i\u0000s\u0000t\u0000e\u0000n\u0000 \u0000v\u0000e\u0000r\u0000f\u0000�\u0000g\u0000b\u0000a\u0000r\u0000e\u0000r\u0000 \u0000D\u0000i\u0000s\u0000t\u0000r\u0000i\u0000b\u0000u\u0000t\u0000i\u0000o\u0000n\u0000e\u0000n\u0000 \u0000v\u0000e\u0000r\u0000w\u0000e\u0000n\u0000d\u0000e\u0000n\u0000\r\n\u0000\r\n\u0000u\u0000n\u0000d\u0000 \u0000\"\u0000w\u0000s\u0000l\u0000.\u0000e\u0000x\u0000e\u0000 \u0000-\u0000-\u0000i\u0000n\u0000s\u0000t\u0000a\u0000l\u0000l\u0000 \u0000<\u0000D\u0000i\u0000s\u0000t\u0000r\u0000o\u0000>\u0000\"\u0000.\u0000\r\n\u0000\r\n\u0000",
+    "wsl_version": "W\u0000S\u0000L\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00002\u0000.\u00007\u0000.\u00001\u00004\u0000.\u00000\u0000\r\n\u0000\r\n\u0000K\u0000e\u0000r\u0000n\u0000e\u0000l\u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00006\u0000.\u00001\u00008\u0000.\u00003\u00003\u0000.\u00002\u0000-\u00002\u0000\r\n\u0000\r\n\u0000W\u0000S\u0000L\u0000g\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00000\u0000.\u00007\u00003\u0000.\u00002\u0000\r\n\u0000\r\n\u0000M\u0000S\u0000R\u0000D\u0000C\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00002\u0000.\u00007\u00002\u00001\u00004\u0000\r\n\u0000\r\n\u0000D\u0000i\u0000r\u0000e\u0000c\u0000t\u00003\u0000D\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u0000.\u00006\u00001\u00001\u0000.\u00001\u0000-\u00008\u00001\u00005\u00002\u00008\u00005\u00001\u00001\u0000\r\n\u0000\r\n\u0000D\u0000X\u0000C\u0000o\u0000r\u0000e\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u00000\u0000.\u00000\u0000.\u00002\u00006\u00001\u00000\u00000\u0000.\u00001\u0000-\u00002\u00004\u00000\u00003\u00003\u00001\u0000-\u00001\u00004\u00003\u00005\u0000.\u0000g\u0000e\u0000-\u0000r\u0000e\u0000l\u0000e\u0000a\u0000s\u0000e\u0000\r\n\u0000\r\n\u0000W\u0000i\u0000n\u0000d\u0000o\u0000w\u0000s\u0000-\u0000V\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00001\u00000\u0000.\u00000\u0000.\u00002\u00006\u00002\u00000\u00000\u0000.\u00009\u00004\u00005\u00007\u0000\r\n\u0000\r\n\u0000",
+    "wsl_status": "S\u0000t\u0000a\u0000n\u0000d\u0000a\u0000r\u0000d\u0000v\u0000e\u0000r\u0000s\u0000i\u0000o\u0000n\u0000:\u0000 \u00002\u0000\r\n\u0000\r\n\u0000",
+    "virtualization_firmware": true,
+    "hyperv": {
+      "FeatureName": "Microsoft-Hyper-V-All",
+      "State": "UNAVAILABLE_NON_ADMIN"
+    }
+  },
+  "network": {
+    "internet": true,
+    "adapters": {
+      "Name": "Ethernet",
+      "InterfaceDescription": "Realtek Gaming 2.5GbE Family Controller",
+      "LinkSpeed": "1 Gbps",
+      "MacAddress": "04-7C-16-47-40-C2"
+    }
+  },
+  "security": {
+    "secure_boot": null,
+    "firewall": [
+      {
+        "Name": "Domain",
+        "Enabled": 1,
+        "DefaultInboundAction": 0,
+        "DefaultOutboundAction": 0
+      },
+      {
+        "Name": "Private",
+        "Enabled": 1,
+        "DefaultInboundAction": 0,
+        "DefaultOutboundAction": 0
+      },
+      {
+        "Name": "Public",
+        "Enabled": 1,
+        "DefaultInboundAction": 0,
+        "DefaultOutboundAction": 0
+      }
+    ],
+    "defender": {
+      "AMRunningMode": "Normal",
+      "AntivirusEnabled": true,
+      "RealTimeProtectionEnabled": true
+    }
+  },
+  "adobe": {
+    "After Effects": [],
+    "Illustrator": [],
+    "Media Encoder": [],
+    "Premiere Pro": [],
+    "Creative Cloud": [],
+    "Photoshop": []
+  },
+  "protected_disk": {
+    "CimClass": {
+      "CimSuperClassName": "MSFT_StorageObject",
+      "CimSuperClass": {
+        "CimSuperClassName": null,
+        "CimSuperClass": null,
+        "CimClassProperties": [
+          {
+            "Name": "ObjectId",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, Key, Required, ReadOnly, NullValue",
+            "Qualifiers": [
+              {
+                "Name": "key",
+                "Value": true,
+                "CimType": 1,
+                "Flags": "DisableOverride, ToSubclass"
+              },
+              {
+                "Name": "read",
+                "Value": true,
+                "CimType": 1,
+                "Flags": "EnableOverride, ToSubclass"
+              },
+              {
+                "Name": "Required",
+                "Value": true,
+                "CimType": 1,
+                "Flags": "DisableOverride, ToSubclass"
+              }
+            ],
+            "ReferenceClassName": null
+          },
+          {
+            "Name": "PassThroughClass",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, ReadOnly, NullValue",
+            "Qualifiers": [
+              {
+                "Name": "read",
+                "Value": true,
+                "CimType": 1,
+                "Flags": "EnableOverride, ToSubclass"
+              }
+            ],
+            "ReferenceClassName": null
+          },
+          {
+            "Name": "PassThroughIds",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, ReadOnly, NullValue",
+            "Qualifiers": [
+              {
+                "Name": "read",
+                "Value": true,
+                "CimType": 1,
+                "Flags": "EnableOverride, ToSubclass"
+              }
+            ],
+            "ReferenceClassName": null
+          },
+          {
+            "Name": "PassThroughNamespace",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, ReadOnly, NullValue",
+            "Qualifiers": [
+              {
+                "Name": "read",
+                "Value": true,
+                "CimType": 1,
+                "Flags": "EnableOverride, ToSubclass"
+              }
+            ],
+            "ReferenceClassName": null
+          },
+          {
+            "Name": "PassThroughServer",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, ReadOnly, NullValue",
+            "Qualifiers": [
+              {
+                "Name": "read",
+                "Value": true,
+                "CimType": 1,
+                "Flags": "EnableOverride, ToSubclass"
+              }
+            ],
+            "ReferenceClassName": null
+          },
+          {
+            "Name": "UniqueId",
+            "Value": null,
+            "CimType": 14,
+            "Flags": "Property, Required, ReadOnly, NullValue",
+            "Qualifiers": [
+              {
+                "Name": "read",
+                "Value": true,
+                "CimType": 1,
+                "Flags": "EnableOverride, ToSubclass"
+              },
+              {
+                "Name": "Required",
+                "Value": true,
+                "CimType": 1,
+                "Flags": "DisableOverride, ToSubclass"
+              }
+            ],
+            "ReferenceClassName": null
+          }
+        ],
+        "CimClassQualifiers": [
+          {
+            "Name": "Abstract",
+            "Value": true,
+            "CimType": 1,
+            "Flags": "EnableOverride, Restricted"
+          },
+          {
+            "Name": "locale",
+            "Value": 1033,
+            "CimType": 7,
+            "Flags": "EnableOverride, Restricted"
+          }
+        ],
+        "CimClassMethods": [],
+        "CimSystemProperties": {
+          "Namespace": "ROOT/Microsoft/Windows/Storage",
+          "ServerName": "WORKSTATION1",
+          "ClassName": "MSFT_StorageObject",
+          "Path": null
+        }
+      },
+      "CimClassProperties": [
+        {
+          "Name": "ObjectId",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, Key, Required, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "key",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            },
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "PassThroughClass",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "PassThroughIds",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "PassThroughNamespace",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "PassThroughServer",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "UniqueId",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "AdapterSerialNumber",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "AllocatedSize",
+          "Value": null,
+          "CimType": 8,
+          "Flags": "Property, Required, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "BootFromDisk",
+          "Value": null,
+          "CimType": 1,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "BusType",
+          "Value": null,
+          "CimType": 4,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "FirmwareVersion",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "FriendlyName",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, Required, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "Guid",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "HealthStatus",
+          "Value": null,
+          "CimType": 4,
+          "Flags": "Property, Required, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "IsBoot",
+          "Value": null,
+          "CimType": 1,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "IsClustered",
+          "Value": null,
+          "CimType": 1,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "IsHighlyAvailable",
+          "Value": null,
+          "CimType": 1,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "IsOffline",
+          "Value": null,
+          "CimType": 1,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "IsReadOnly",
+          "Value": null,
+          "CimType": 1,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "IsScaleOut",
+          "Value": null,
+          "CimType": 1,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "IsSystem",
+          "Value": null,
+          "CimType": 1,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "LargestFreeExtent",
+          "Value": null,
+          "CimType": 8,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "Location",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "LogicalSectorSize",
+          "Value": null,
+          "CimType": 6,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "Manufacturer",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "Model",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "Number",
+          "Value": null,
+          "CimType": 6,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "NumberOfPartitions",
+          "Value": null,
+          "CimType": 6,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "OfflineReason",
+          "Value": null,
+          "CimType": 4,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "OperationalStatus",
+          "Value": null,
+          "CimType": 20,
+          "Flags": "Property, Required, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "..",
+                "0xD010",
+                "0xD011",
+                "0xD012",
+                "0xD013",
+                "0xD014"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "PartitionStyle",
+          "Value": null,
+          "CimType": 4,
+          "Flags": "Property, Required, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "Path",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, Required, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "PhysicalSectorSize",
+          "Value": null,
+          "CimType": 6,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "ProvisioningType",
+          "Value": null,
+          "CimType": 4,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "SerialNumber",
+          "Value": null,
+          "CimType": 14,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "Signature",
+          "Value": null,
+          "CimType": 6,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "Size",
+          "Value": null,
+          "CimType": 8,
+          "Flags": "Property, Required, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        },
+        {
+          "Name": "UniqueIdFormat",
+          "Value": null,
+          "CimType": 4,
+          "Flags": "Property, ReadOnly, NullValue",
+          "Qualifiers": [
+            {
+              "Name": "read",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "8"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ],
+          "ReferenceClassName": null
+        }
+      ],
+      "CimClassQualifiers": [
+        {
+          "Name": "dynamic",
+          "Value": true,
+          "CimType": 1,
+          "Flags": "EnableOverride, ToSubclass"
+        },
+        {
+          "Name": "locale",
+          "Value": 1033,
+          "CimType": 7,
+          "Flags": "EnableOverride, Restricted"
+        },
+        {
+          "Name": "provider",
+          "Value": "StorageWMI",
+          "CimType": 14,
+          "Flags": "EnableOverride, ToSubclass"
+        }
+      ],
+      "CimClassMethods": [
+        {
+          "Name": "CreatePartition",
+          "ReturnType": 6,
+          "Parameters": [
+            {
+              "Name": "Alignment",
+              "CimType": 6,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 3,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "AssignDriveLetter",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 5,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "DriveLetter",
+              "CimType": 12,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 4,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "GptType",
+              "CimType": 14,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 7,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ValueMap",
+                  "Value": [
+                    "{c12a7328-f81f-11d2-ba4b-00a0c93ec93b}",
+                    "{e3c9e316-0b5c-4db8-817d-f92df00215ae}",
+                    "{ebd0a0a2-b9e5-4433-87c0-68b6b72699c7}",
+                    "{5808c8aa-7e8f-42e0-85d2-e1e90434cfb3}",
+                    "{af9b60a0-1431-4f62-bc68-3311714a69ad}",
+                    "{de94bba4-06d1-4d40-a16a-bfd50179d6ac}"
+                  ],
+                  "CimType": 30,
+                  "Flags": "EnableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "IsActive",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 9,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "IsHidden",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 8,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "MbrType",
+              "CimType": 4,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 6,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ValueMap",
+                  "Value": [
+                    "1",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "12"
+                  ],
+                  "CimType": 30,
+                  "Flags": "EnableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "Offset",
+              "CimType": 8,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 2,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "Size",
+              "CimType": 8,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 0,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "UseMaximumSize",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 1,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "CreatedPartition",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_Partition",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 10,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "ExtendedStatus",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_StorageExtendedStatus",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 11,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            }
+          ],
+          "Qualifiers": [
+            {
+              "Name": "implemented",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, Restricted"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "4097",
+                "40000",
+                "40001",
+                "40002",
+                "40003",
+                "40005",
+                "41000",
+                "41002",
+                "41003",
+                "41004",
+                "41005",
+                "41006",
+                "41010",
+                "41011",
+                "41012",
+                "41015",
+                "41016",
+                "41017",
+                "41018",
+                "42002",
+                "42004",
+                "42007"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ]
+        },
+        {
+          "Name": "Initialize",
+          "ReturnType": 6,
+          "Parameters": [
+            {
+              "Name": "PartitionStyle",
+              "CimType": 4,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 0,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ValueMap",
+                  "Value": [
+                    "1",
+                    "2"
+                  ],
+                  "CimType": 30,
+                  "Flags": "EnableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "ExtendedStatus",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_StorageExtendedStatus",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 1,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            }
+          ],
+          "Qualifiers": [
+            {
+              "Name": "implemented",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, Restricted"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "40001",
+                "40002",
+                "40003",
+                "41001",
+                "41010",
+                "41014",
+                "41018"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ]
+        },
+        {
+          "Name": "Clear",
+          "ReturnType": 6,
+          "Parameters": [
+            {
+              "Name": "RemoveData",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 0,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "RemoveOEM",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 1,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "RunAsJob",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 4,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "Sanitize",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 3,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "ZeroOutEntireDisk",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 2,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "CreatedStorageJob",
+              "CimType": 15,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 5,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": "MSFT_StorageJob"
+            },
+            {
+              "Name": "ExtendedStatus",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_StorageExtendedStatus",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 6,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            }
+          ],
+          "Qualifiers": [
+            {
+              "Name": "implemented",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, Restricted"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "4096",
+                "40001",
+                "40002",
+                "40003",
+                "41000",
+                "41002",
+                "41003",
+                "41007",
+                "41008",
+                "41009",
+                "41015",
+                "41019"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ]
+        },
+        {
+          "Name": "ConvertStyle",
+          "ReturnType": 6,
+          "Parameters": [
+            {
+              "Name": "PartitionStyle",
+              "CimType": 4,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 0,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Required",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ValueMap",
+                  "Value": [
+                    "1",
+                    "2"
+                  ],
+                  "CimType": 30,
+                  "Flags": "EnableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "ExtendedStatus",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_StorageExtendedStatus",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 1,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            }
+          ],
+          "Qualifiers": [
+            {
+              "Name": "implemented",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, Restricted"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "40001",
+                "40002",
+                "40003",
+                "41000",
+                "41002",
+                "41003",
+                "41009",
+                "41013",
+                "41014",
+                "41019"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ]
+        },
+        {
+          "Name": "Offline",
+          "ReturnType": 6,
+          "Parameters": [
+            {
+              "Name": "ExtendedStatus",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_StorageExtendedStatus",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 0,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            }
+          ],
+          "Qualifiers": [
+            {
+              "Name": "implemented",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, Restricted"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "40001",
+                "40002",
+                "40003",
+                "41009",
+                "41018"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ]
+        },
+        {
+          "Name": "Online",
+          "ReturnType": 6,
+          "Parameters": [
+            {
+              "Name": "ExtendedStatus",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_StorageExtendedStatus",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 0,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            }
+          ],
+          "Qualifiers": [
+            {
+              "Name": "implemented",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, Restricted"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "40001",
+                "40002",
+                "40003",
+                "41018"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ]
+        },
+        {
+          "Name": "SetAttributes",
+          "ReturnType": 6,
+          "Parameters": [
+            {
+              "Name": "Guid",
+              "CimType": 14,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 2,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "IsReadOnly",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 0,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "Signature",
+              "CimType": 6,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 1,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "ExtendedStatus",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_StorageExtendedStatus",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 3,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            }
+          ],
+          "Qualifiers": [
+            {
+              "Name": "implemented",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, Restricted"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "40001",
+                "40002",
+                "40003",
+                "41000",
+                "41003",
+                "41006",
+                "41009",
+                "41018"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ]
+        },
+        {
+          "Name": "Refresh",
+          "ReturnType": 6,
+          "Parameters": [
+            {
+              "Name": "ExtendedStatus",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_StorageExtendedStatus",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 0,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            }
+          ],
+          "Qualifiers": [
+            {
+              "Name": "implemented",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, Restricted"
+            },
+            {
+              "Name": "Required",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "DisableOverride, ToSubclass"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "40001",
+                "40002",
+                "40003",
+                "41000",
+                "41003"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ]
+        },
+        {
+          "Name": "CreateVolume",
+          "ReturnType": 6,
+          "Parameters": [
+            {
+              "Name": "AccessPath",
+              "CimType": 14,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 2,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "AllocationUnitSize",
+              "CimType": 6,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 3,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "FileSystem",
+              "CimType": 4,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 1,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ValueMap",
+                  "Value": [
+                    "14",
+                    "15",
+                    "0x8000",
+                    "0x8001"
+                  ],
+                  "CimType": 30,
+                  "Flags": "EnableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "FriendlyName",
+              "CimType": 14,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 0,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Required",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "RunAsJob",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 5,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "CreatedStorageJob",
+              "CimType": 15,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 6,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": "MSFT_StorageJob"
+            },
+            {
+              "Name": "CreatedVolume",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_Volume",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 4,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "ExtendedStatus",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_StorageExtendedStatus",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 7,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            }
+          ],
+          "Qualifiers": [
+            {
+              "Name": "implemented",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, Restricted"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "4096",
+                "4097",
+                "40000",
+                "40001",
+                "40002",
+                "40004",
+                "40009",
+                "41001",
+                "41002",
+                "41003",
+                "41004",
+                "41014",
+                "41016",
+                "41018",
+                "41019",
+                "42002",
+                "42007",
+                "43000",
+                "43001",
+                "43002",
+                "43005",
+                "43006",
+                "43017",
+                "43034",
+                "46000",
+                "46001",
+                "46008",
+                "46011"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ]
+        },
+        {
+          "Name": "EnableHighAvailability",
+          "ReturnType": 6,
+          "Parameters": [
+            {
+              "Name": "RunAsJob",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 1,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "ScaleOut",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 0,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "CreatedStorageJob",
+              "CimType": 15,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 2,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": "MSFT_StorageJob"
+            },
+            {
+              "Name": "ExtendedStatus",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_StorageExtendedStatus",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 3,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            }
+          ],
+          "Qualifiers": [
+            {
+              "Name": "implemented",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, Restricted"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "4096",
+                "40001",
+                "40004",
+                "40009",
+                "41002",
+                "41020",
+                "41021",
+                "43001",
+                "43006",
+                "46000",
+                "46001",
+                "46011"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ]
+        },
+        {
+          "Name": "DisableHighAvailability",
+          "ReturnType": 6,
+          "Parameters": [
+            {
+              "Name": "RunAsJob",
+              "CimType": 1,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 0,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "In",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            },
+            {
+              "Name": "CreatedStorageJob",
+              "CimType": 15,
+              "Qualifiers": [
+                {
+                  "Name": "ID",
+                  "Value": 1,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": "MSFT_StorageJob"
+            },
+            {
+              "Name": "ExtendedStatus",
+              "CimType": 16,
+              "Qualifiers": [
+                {
+                  "Name": "EmbeddedInstance",
+                  "Value": "MSFT_StorageExtendedStatus",
+                  "CimType": 14,
+                  "Flags": "EnableOverride, ToSubclass"
+                },
+                {
+                  "Name": "ID",
+                  "Value": 2,
+                  "CimType": 7,
+                  "Flags": "DisableOverride, ToSubclass"
+                },
+                {
+                  "Name": "Out",
+                  "Value": true,
+                  "CimType": 1,
+                  "Flags": "DisableOverride, ToSubclass"
+                }
+              ],
+              "ReferenceClassName": null
+            }
+          ],
+          "Qualifiers": [
+            {
+              "Name": "implemented",
+              "Value": true,
+              "CimType": 1,
+              "Flags": "EnableOverride, Restricted"
+            },
+            {
+              "Name": "ValueMap",
+              "Value": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "4096",
+                "40001",
+                "40004",
+                "40009",
+                "41002",
+                "41022",
+                "41023",
+                "43001",
+                "43006",
+                "46000",
+                "46001",
+                "46012"
+              ],
+              "CimType": 30,
+              "Flags": "EnableOverride, ToSubclass"
+            }
+          ]
+        }
+      ],
+      "CimSystemProperties": {
+        "Namespace": "ROOT/Microsoft/Windows/Storage",
+        "ServerName": "WORKSTATION1",
+        "ClassName": "MSFT_Disk",
+        "Path": null
+      }
+    },
+    "CimInstanceProperties": [
+      {
+        "Name": "ObjectId",
+        "Value": "{1}\\\\WORKSTATION1\\root/Microsoft/Windows/Storage/Providers_v2\\WSP_Disk.ObjectId=\"{f590835b-b151-11f1-974f-806e6f6e6963}:DI:\\\\?\\scsi#disk&ven_nvme&prod_adata_sx8200pnp#5&31bf2f96&0&000000#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}\"",
+        "CimType": 14,
+        "Flags": "Property, Key, Required, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "PassThroughClass",
+        "Value": null,
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified, NullValue",
+        "IsValueModified": false
+      },
+      {
+        "Name": "PassThroughIds",
+        "Value": null,
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified, NullValue",
+        "IsValueModified": false
+      },
+      {
+        "Name": "PassThroughNamespace",
+        "Value": null,
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified, NullValue",
+        "IsValueModified": false
+      },
+      {
+        "Name": "PassThroughServer",
+        "Value": null,
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified, NullValue",
+        "IsValueModified": false
+      },
+      {
+        "Name": "UniqueId",
+        "Value": "1CC1ADATA SX8200PNP                         00012J5020035211        ",
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "AdapterSerialNumber",
+        "Value": "2J5020035211        _0001",
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "AllocatedSize",
+        "Value": 1024208494592,
+        "CimType": 8,
+        "Flags": "Property, Required, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "BootFromDisk",
+        "Value": true,
+        "CimType": 1,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "BusType",
+        "Value": 17,
+        "CimType": 4,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "FirmwareVersion",
+        "Value": "42A4SANA",
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "FriendlyName",
+        "Value": "ADATA SX8200PNP",
+        "CimType": 14,
+        "Flags": "Property, Required, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "Guid",
+        "Value": "{6bff7bd5-487c-4330-a742-3c4db658b898}",
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "HealthStatus",
+        "Value": 0,
+        "CimType": 4,
+        "Flags": "Property, Required, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "IsBoot",
+        "Value": false,
+        "CimType": 1,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "IsClustered",
+        "Value": false,
+        "CimType": 1,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "IsHighlyAvailable",
+        "Value": false,
+        "CimType": 1,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "IsOffline",
+        "Value": false,
+        "CimType": 1,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "IsReadOnly",
+        "Value": false,
+        "CimType": 1,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "IsScaleOut",
+        "Value": false,
+        "CimType": 1,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "IsSystem",
+        "Value": true,
+        "CimType": 1,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "LargestFreeExtent",
+        "Value": 1048576,
+        "CimType": 8,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "Location",
+        "Value": "Integrated : Bus 3 : Device 0 : Function 0 : Adapter 3",
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "LogicalSectorSize",
+        "Value": 512,
+        "CimType": 6,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "Manufacturer",
+        "Value": null,
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified, NullValue",
+        "IsValueModified": false
+      },
+      {
+        "Name": "Model",
+        "Value": "ADATA SX8200PNP",
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "Number",
+        "Value": 1,
+        "CimType": 6,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "NumberOfPartitions",
+        "Value": 4,
+        "CimType": 6,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "OfflineReason",
+        "Value": 0,
+        "CimType": 4,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "OperationalStatus",
+        "Value": [
+          53264
+        ],
+        "CimType": 20,
+        "Flags": "Property, Required, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "PartitionStyle",
+        "Value": 2,
+        "CimType": 4,
+        "Flags": "Property, Required, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "Path",
+        "Value": "\\\\?\\scsi#disk&ven_nvme&prod_adata_sx8200pnp#5&31bf2f96&0&000000#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}",
+        "CimType": 14,
+        "Flags": "Property, Required, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "PhysicalSectorSize",
+        "Value": 4096,
+        "CimType": 6,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "ProvisioningType",
+        "Value": 2,
+        "CimType": 4,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "SerialNumber",
+        "Value": "2J5020035211        _00000001.",
+        "CimType": 14,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "Signature",
+        "Value": null,
+        "CimType": 6,
+        "Flags": "Property, ReadOnly, NotModified, NullValue",
+        "IsValueModified": false
+      },
+      {
+        "Name": "Size",
+        "Value": 1024209543168,
+        "CimType": 8,
+        "Flags": "Property, Required, ReadOnly, NotModified",
+        "IsValueModified": false
+      },
+      {
+        "Name": "UniqueIdFormat",
+        "Value": 8,
+        "CimType": 4,
+        "Flags": "Property, ReadOnly, NotModified",
+        "IsValueModified": false
+      }
+    ],
+    "CimSystemProperties": {
+      "Namespace": "ROOT/Microsoft/Windows/Storage",
+      "ServerName": "WORKSTATION1",
+      "ClassName": "MSFT_Disk",
+      "Path": null
+    },
+    "DiskNumber": 1,
+    "PartitionStyle": "GPT",
+    "ProvisioningType": "Fixed",
+    "OperationalStatus": "Online",
+    "HealthStatus": "Healthy",
+    "BusType": "NVMe",
+    "UniqueIdFormat": "SCSI Name String",
+    "OfflineReason": null,
+    "ObjectId": "{1}\\\\WORKSTATION1\\root/Microsoft/Windows/Storage/Providers_v2\\WSP_Disk.ObjectId=\"{f590835b-b151-11f1-974f-806e6f6e6963}:DI:\\\\?\\scsi#disk&ven_nvme&prod_adata_sx8200pnp#5&31bf2f96&0&000000#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}\"",
+    "PassThroughClass": null,
+    "PassThroughIds": null,
+    "PassThroughNamespace": null,
+    "PassThroughServer": null,
+    "UniqueId": "1CC1ADATA SX8200PNP                         00012J5020035211        ",
+    "AdapterSerialNumber": "2J5020035211        _0001",
+    "AllocatedSize": 1024208494592,
+    "BootFromDisk": true,
+    "FirmwareVersion": "42A4SANA",
+    "FriendlyName": "ADATA SX8200PNP",
+    "Guid": "{6bff7bd5-487c-4330-a742-3c4db658b898}",
+    "IsBoot": false,
+    "IsClustered": false,
+    "IsHighlyAvailable": false,
+    "IsOffline": false,
+    "IsReadOnly": false,
+    "IsScaleOut": false,
+    "IsSystem": true,
+    "LargestFreeExtent": 1048576,
+    "Location": "Integrated : Bus 3 : Device 0 : Function 0 : Adapter 3",
+    "LogicalSectorSize": 512,
+    "Manufacturer": null,
+    "Model": "ADATA SX8200PNP",
+    "Number": 1,
+    "NumberOfPartitions": 4,
+    "Path": "\\\\?\\scsi#disk&ven_nvme&prod_adata_sx8200pnp#5&31bf2f96&0&000000#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}",
+    "PhysicalSectorSize": 4096,
+    "SerialNumber": "2J5020035211        _00000001.",
+    "Signature": null,
+    "Size": 1024209543168,
+    "PSComputerName": null
+  }
+}

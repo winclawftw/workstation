@@ -1,0 +1,8 @@
+Gate 5 Hermes precheck — 2026-09-16
+Windows Python: 3.12.10
+WSL distro: Ubuntu-24.04 / WSL2
+WSL Python: 3.12.3
+Hermes target: C:\Einrichtung\06_Hermes
+Ollama binary: C:\Einrichtung\05_AI\ollama\ollama.exe
+Ollama models: C:\Einrichtung\05_AI\models
+Scope: local-only, no cloud/API key, no autostart, no production MCP

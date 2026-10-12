@@ -1,0 +1,18 @@
+GATE 4 OLLAMA TEST
+Timestamp: 2026-09-16 06:50 local
+
+Installation mode: official standalone Windows CLI archive
+Source: https://ollama.com/download/ollama-windows-amd64.zip
+Ollama version: 0.34.1
+Endpoint: http://127.0.0.1:11434
+Autostart: not configured
+Model storage: C:\Einrichtung\05_AI\models
+
+Model: tinyllama:1.1b-chat
+Model pull: PASS; Ollama verified the SHA-256 digest
+Inference: PASS; local API response received
+ollama ps: 100% GPU, 694 MB model, context 2048
+NVIDIA during inference: 1724 MiB / 24564 MiB, 99% GPU utilization
+
+Response marker was requested as LOCAL_GPU_TEST_OK. The model returned a local response containing that marker.
+No cloud provider, API key, OpenRouter configuration, or model larger than the small test model was added.

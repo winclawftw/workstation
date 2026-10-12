@@ -1,0 +1,10 @@
+Gate 5 Hermes installation — 2026-09-16
+Installer: official Hermes install.sh from hermes-agent.nousresearch.com
+Install directory: /mnt/c/Einrichtung/06_Hermes/app
+HERMES_HOME: /mnt/c/Einrichtung/06_Hermes/home
+Python environment: /mnt/c/Einrichtung/06_Hermes/app/venv (Python 3.12.3)
+Hermes version: 0.21.3
+Source revision: bf1c28b4
+Result: installer exit 0; launcher available as /root/.local/bin/hermes
+Options: --skip-setup --skip-browser --skip-computer-use --no-skills --non-interactive
+No gateway/service/autostart was installed.

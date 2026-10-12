@@ -1,0 +1,7 @@
+# Separate Qwen qualification configuration; existing Hermes config is untouched.
+model:
+  default: "qwen3.8"
+  provider: "custom"
+  base_url: "http://172.31.32.1:11434/v1"
+  context_length: 65536
+  ollama_num_ctx: 65536

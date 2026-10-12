@@ -1,0 +1,77 @@
+{
+  "timestamp": "2026-09-16T06:22:24.9468992+02:00",
+  "phase": "Gate2-Developer-Tools",
+  "results": [
+    {
+      "name": "PowerShell 7",
+      "status": "PASS",
+      "exit_code": 0,
+      "before": null,
+      "after": "PowerShell 7.6.6",
+      "output": "Found PowerShell [Microsoft.PowerShell] Version 7.6.6.0\r\nThis application is licensed to you by its owner.\r\nMicrosoft is not responsible for, nor does it grant any licenses to, third-party packages.\r\nSuccessfully verified installer hash\r\nStarting package install...\r\nSuccessfully installed"
+    },
+    {
+      "name": "Git",
+      "status": "SKIPPED",
+      "before": "git version 2.55.0.windows.3",
+      "after": "git version 2.55.0.windows.3"
+    },
+    {
+      "name": "Git LFS",
+      "status": "SKIPPED",
+      "before": "git-lfs/3.7.1 (GitHub; windows amd64; go 1.25.1; git b84b3384)",
+      "after": "git-lfs/3.7.1 (GitHub; windows amd64; go 1.25.1; git b84b3384)"
+    },
+    {
+      "name": "Python",
+      "status": "PASS",
+      "exit_code": 0,
+      "before": null,
+      "after": "Python 3.12.10",
+      "output": "Found Python 3.12 [Python.Python.3.12] Version 3.12.10\r\nThis application is licensed to you by its owner.\r\nMicrosoft is not responsible for, nor does it grant any licenses to, third-party packages.\r\nDownloading https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe\r\nSuccessfully verified installer hash\r\nStarting package install...\r\nSuccessfully installed"
+    },
+    {
+      "name": "Node.js LTS",
+      "status": "PASS",
+      "exit_code": 0,
+      "before": null,
+      "after": "v24.19.0",
+      "output": "Found Node.js (LTS) [OpenJS.NodeJS.LTS] Version 24.19.0\r\nThis application is licensed to you by its owner.\r\nMicrosoft is not responsible for, nor does it grant any licenses to, third-party packages.\r\nDownloading https://nodejs.org/dist/v24.19.0/node-v24.19.0-x64.msi\r\nSuccessfully verified installer hash\r\nStarting package install...\r\nThe installer will request to run as administrator. Expect a prompt.\r\nSuccessfully installed"
+    },
+    {
+      "name": "Visual Studio Code",
+      "status": "SKIPPED",
+      "before": "1.137.0\r\n645f29cc3176500b4b5762ba887cf2a7f0ffdf2c\r\nx64",
+      "after": "1.137.0\r\n645f29cc3176500b4b5762ba887cf2a7f0ffdf2c\r\nx64"
+    },
+    {
+      "name": "7-Zip",
+      "status": "FAILED",
+      "exit_code": -1978335189,
+      "before": null,
+      "after": null,
+      "output": "Found an existing package already installed. Trying to upgrade the installed package...\r\nNo available upgrade found.\r\nNo newer package versions are available from the configured sources."
+    },
+    {
+      "name": "FFmpeg",
+      "status": "SKIPPED",
+      "before": "ffmpeg version 9.0.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers\r\n  built with gcc 16.1.0 (Rev2, Built by MSYS2 project)\r\n  configuration: --enable-gpl --enable-version3 --enable-shared --disable-w32threads --disable-autodetect --enable-cairo --enable-fontconfig --enable-iconv --enable-gnutls --enable-lcms2 --enable-libxml2 --enable-gmp --enable-bzlib --enable-lzma --enable-libsnappy --enable-zlib --enable-librist --enable-libsrt --enable-libssh --enable-libzmq --enable-avisynth --enable-libbluray --enable-libcaca --enable-libdvdnav --enable-libdvdread --enable-sdl2 --enable-libaribb24 --enable-libaribcaption --enable-libdav1d --enable-libdavs2 --enable-libopenjpeg --enable-libquirc --enable-libuavs3d --enable-libxevd --enable-libzvbi --enable-liboapv --enable-libqrencode --enable-librav1e --enable-libsvtav1 --enable-libvvenc --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxavs2 --enable-libxeve --enable-libxvid --enable-libaom --enable-libjxl --enable-libsvtjpegxs --enable-libvpx --enable-mediafoundation --enable-libass --enable-frei0r --enable-libfreetype --enable-libfribidi --enable-libharfbuzz --enable-liblensfun --enable-libvidstab --enable-libvmaf --enable-libzimg --enable-amf --enable-cuda-llvm --enable-cuvid --enable-dxva2 --enable-d3d11va --enable-d3d12va --enable-ffnvcodec --enable-libvpl --enable-nvdec --enable-nvenc --enable-vaapi --enable-vulkan --enable-libplacebo --enable-opencl --enable-libcdio --enable-openal --enable-libgme --enable-libmodplug --enable-libopenmpt --enable-libopencore-amrwb --enable-libmp3lame --enable-libshine --enable-libtheora --enable-libtwolame --enable-libvo-amrwbenc --enable-libcodec2 --enable-libilbc --enable-libgsm --enable-liblc3 --enable-libopencore-amrnb --enable-libopus --enable-libspeex --enable-libvorbis --enable-ladspa --enable-libbs2b --enable-libflite --enable-libmysofa --enable-librubberband --enable-libsoxr --enable-chromaprint --enable-whisper\r\n  libavutil      61.  1.101 / 61.  1.101\r\n  libavcodec     63.  1.101 / 63.  1.101\r\n  libavformat    63.  1.101 / 63.  1.101\r\n  libavdevice    63.  1.101 / 63.  1.101\r\n  libavfilter    12.  1.101 / 12.  1.101\r\n  libswscale     10.  1.101 / 10.  1.101\r\n  libswresample   7.  1.101 /  7.  1.101\r\nUnrecognized option '-version'.\r\nError splitting the argument list: Option not found",
+      "after": "ffmpeg version 9.0.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers\r\n  built with gcc 16.1.0 (Rev2, Built by MSYS2 project)\r\n  configuration: --enable-gpl --enable-version3 --enable-shared --disable-w32threads --disable-autodetect --enable-cairo --enable-fontconfig --enable-iconv --enable-gnutls --enable-lcms2 --enable-libxml2 --enable-gmp --enable-bzlib --enable-lzma --enable-libsnappy --enable-zlib --enable-librist --enable-libsrt --enable-libssh --enable-libzmq --enable-avisynth --enable-libbluray --enable-libcaca --enable-libdvdnav --enable-libdvdread --enable-sdl2 --enable-libaribb24 --enable-libaribcaption --enable-libdav1d --enable-libdavs2 --enable-libopenjpeg --enable-libquirc --enable-libuavs3d --enable-libxevd --enable-libzvbi --enable-liboapv --enable-libqrencode --enable-librav1e --enable-libsvtav1 --enable-libvvenc --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxavs2 --enable-libxeve --enable-libxvid --enable-libaom --enable-libjxl --enable-libsvtjpegxs --enable-libvpx --enable-mediafoundation --enable-libass --enable-frei0r --enable-libfreetype --enable-libfribidi --enable-libharfbuzz --enable-liblensfun --enable-libvidstab --enable-libvmaf --enable-libzimg --enable-amf --enable-cuda-llvm --enable-cuvid --enable-dxva2 --enable-d3d11va --enable-d3d12va --enable-ffnvcodec --enable-libvpl --enable-nvdec --enable-nvenc --enable-vaapi --enable-vulkan --enable-libplacebo --enable-opencl --enable-libcdio --enable-openal --enable-libgme --enable-libmodplug --enable-libopenmpt --enable-libopencore-amrwb --enable-libmp3lame --enable-libshine --enable-libtheora --enable-libtwolame --enable-libvo-amrwbenc --enable-libcodec2 --enable-libilbc --enable-libgsm --enable-liblc3 --enable-libopencore-amrnb --enable-libopus --enable-libspeex --enable-libvorbis --enable-ladspa --enable-libbs2b --enable-libflite --enable-libmysofa --enable-librubberband --enable-libsoxr --enable-chromaprint --enable-whisper\r\n  libavutil      61.  1.101 / 61.  1.101\r\n  libavcodec     63.  1.101 / 63.  1.101\r\n  libavformat    63.  1.101 / 63.  1.101\r\n  libavdevice    63.  1.101 / 63.  1.101\r\n  libavfilter    12.  1.101 / 12.  1.101\r\n  libswscale     10.  1.101 / 10.  1.101\r\n  libswresample   7.  1.101 /  7.  1.101\r\nUnrecognized option '-version'.\r\nError splitting the argument list: Option not found"
+    }
+  ],
+  "skipped": [
+    "Git",
+    "Git LFS",
+    "Visual Studio Code",
+    "FFmpeg"
+  ],
+  "installed": [
+    "PowerShell 7",
+    "Python",
+    "Node.js LTS"
+  ],
+  "failed": [
+    "7-Zip"
+  ],
+  "git_user_configuration_required": true
+}

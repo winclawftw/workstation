@@ -1,0 +1,326 @@
+{
+  "timestamp": "2026-09-16T06:14:40.275928+00:00",
+  "model": {
+    "requested_tag": "qwen3.8",
+    "show": {
+      "details": {
+        "parent_model": "qwen3.8:27b-q4_K_M",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "27.3B",
+        "quantization_level": "Q4_K_M"
+      },
+      "model_info": {
+        "general.architecture": "qwen35",
+        "general.basename": "Qwen3.8",
+        "general.file_type": 15,
+        "general.license": "apache-2.0",
+        "general.parameter_count": 27320697856,
+        "general.quantization_version": 2,
+        "general.sampling.temp": 1,
+        "general.sampling.top_k": 20,
+        "general.sampling.top_p": 0.95,
+        "general.size_label": "27B",
+        "general.tags": [
+          "image-text-to-text"
+        ],
+        "general.type": "model",
+        "general.version": "0814",
+        "qwen35.attention.head_count": 24,
+        "qwen35.attention.head_count_kv": 4,
+        "qwen35.attention.key_length": 256,
+        "qwen35.attention.layer_norm_rms_epsilon": 1e-06,
+        "qwen35.attention.value_length": 256,
+        "qwen35.block_count": 65,
+        "qwen35.context_length": 262144,
+        "qwen35.embedding_length": 5120,
+        "qwen35.feed_forward_length": 17408,
+        "qwen35.full_attention_interval": 4,
+        "qwen35.nextn_predict_layers": 1,
+        "qwen35.rope.dimension_count": 64,
+        "qwen35.rope.dimension_sections": [
+          11,
+          11,
+          10,
+          0
+        ],
+        "qwen35.rope.freq_base": 10000000,
+        "qwen35.ssm.conv_kernel": 4,
+        "qwen35.ssm.group_count": 16,
+        "qwen35.ssm.inner_size": 6144,
+        "qwen35.ssm.state_size": 128,
+        "qwen35.ssm.time_step_rank": 48,
+        "tokenizer.ggml.add_bos_token": false,
+        "tokenizer.ggml.bos_token_id": 248044,
+        "tokenizer.ggml.eos_token_id": 248046,
+        "tokenizer.ggml.merges": [],
+        "tokenizer.ggml.model": "gpt2",
+        "tokenizer.ggml.padding_token_id": 248044,
+        "tokenizer.ggml.pre": "qwen35",
+        "tokenizer.ggml.token_type": [],
+        "tokenizer.ggml.tokens": []
+      },
+      "capabilities": [
+        "completion",
+        "vision",
+        "tools",
+        "thinking"
+      ],
+      "requires": "0.32.12"
+    },
+    "tags": []
+  },
+  "environment": {
+    "ollama": "0.34.1",
+    "hermes": "0.21.3",
+    "python": "3.12.10",
+    "wsl": "2.7.14.0",
+    "windows": "Windows 11 Pro build 26200",
+    "gpu": "NVIDIA GeForce RTX 3090 Ti",
+    "vram_total_mib": 24564,
+    "ram": "32 GB DDR5",
+    "cloud": "OFF",
+    "api_keys": "NONE"
+  },
+  "configuration": {
+    "context_size": 65536,
+    "temperature": 0.2,
+    "top_p": 0.95,
+    "gpu_layers": "Ollama default / num_gpu=-1",
+    "parallelism": 1,
+    "thinking": false,
+    "num_predict": 256
+  },
+  "tests": {
+    "basic_inference": {
+      "result": "QWEN BASIC PASS",
+      "metrics": {
+        "status": "PASS",
+        "wall_seconds": 34.68849500000033,
+        "total_seconds": 34.6696944,
+        "load_seconds": 31.0034619,
+        "prompt_tokens": 23,
+        "output_tokens": 6,
+        "tokens_per_second": 7.4,
+        "time_to_first_token": "NOT MEASURED (non-streaming API)",
+        "gpu_peak_util_percent": 55,
+        "vram_peak_mib": 23907,
+        "error": null
+      },
+      "pass": true
+    },
+    "german": {
+      "result": "1. **Kein Dateisystem-Übergang**: `/home` liegt im nativen Linux-Dateisystem (ext4), während `/mnt/c` ein Windows-Dateisystem (NTFS) ist. Der Übergang zwischen den beiden erfordert zusätzliche Übersetzungs- und Synchronisationsaufwände.\n2. **Bessere Performance bei Metadaten-Operationen**: Linux-Tools (wie `ls`, `find`, Compiler) sind auf das Linux-Dateisystem optimiert. NTFS über den 9P-Protokoll-Brücke ist bei häufigen kleinen Lese-/Schreibzugriffen und Metadaten-Abfragen deutlich langsamer.",
+      "metrics": {
+        "status": "PASS",
+        "wall_seconds": 49.99110689999998,
+        "total_seconds": 49.9854808,
+        "load_seconds": 0.0142106,
+        "prompt_tokens": 62,
+        "output_tokens": 143,
+        "tokens_per_second": 3.13,
+        "time_to_first_token": "NOT MEASURED (non-streaming API)",
+        "gpu_peak_util_percent": 100,
+        "vram_peak_mib": 23929,
+        "error": null
+      },
+      "pass": true
+    },
+    "structured_output": {
+      "result": {
+        "task": "filesystem-check",
+        "status": "ok",
+        "items": [
+          {
+            "name": "WSL",
+            "value": "/mnt/c"
+          },
+          {
+            "name": "Windows",
+            "value": "C:\\Users\\Public"
+          }
+        ]
+      },
+      "raw": "{\n  \"task\": \"filesystem-check\",\n  \"status\": \"ok\",\n  \"items\": [\n    {\n      \"name\": \"WSL\",\n      \"value\": \"/mnt/c\"\n    },\n    {\n      \"name\": \"Windows\",\n      \"value\": \"C:\\\\Users\\\\Public\"\n    }\n  ]\n}",
+      "metrics": {
+        "status": "PASS",
+        "wall_seconds": 15.796503999999914,
+        "total_seconds": 15.7713105,
+        "load_seconds": 0.0024533,
+        "prompt_tokens": 41,
+        "output_tokens": 80,
+        "tokens_per_second": 5.95,
+        "time_to_first_token": "NOT MEASURED (non-streaming API)",
+        "gpu_peak_util_percent": 94,
+        "vram_peak_mib": 23728,
+        "error": null
+      },
+      "pass": true
+    },
+    "tool_call_intent": {
+      "result": [
+        {
+          "id": "call_vdo5f040",
+          "function": {
+            "index": 0,
+            "name": "get_current_directory",
+            "arguments": {}
+          }
+        }
+      ],
+      "metrics": {
+        "status": "PASS",
+        "wall_seconds": 4.7223203000003195,
+        "total_seconds": 4.7212316,
+        "load_seconds": 0.0051963,
+        "prompt_tokens": 274,
+        "output_tokens": 15,
+        "tokens_per_second": 7.12,
+        "time_to_first_token": "NOT MEASURED (non-streaming API)",
+        "gpu_peak_util_percent": 95,
+        "vram_peak_mib": 23681,
+        "error": null
+      },
+      "pass": true
+    },
+    "context": {
+      "result": {
+        "alpha": "red",
+        "beta": "7",
+        "gamma": "WSL",
+        "checksum": "red-7-WSL"
+      },
+      "raw": "{\n  \"alpha\": \"red\",\n  \"beta\": \"7\",\n  \"gamma\": \"WSL\",\n  \"checksum\": \"red-7-WSL\"\n}",
+      "metrics": {
+        "status": "PASS",
+        "wall_seconds": 8.929001800000151,
+        "total_seconds": 8.9258705,
+        "load_seconds": 0.0025904,
+        "prompt_tokens": 59,
+        "output_tokens": 42,
+        "tokens_per_second": 6.25,
+        "time_to_first_token": "NOT MEASURED (non-streaming API)",
+        "gpu_peak_util_percent": 94,
+        "vram_peak_mib": 23719,
+        "error": null
+      },
+      "pass": true
+    },
+    "error_handling": {
+      "result": "I'd be happy to look up the weather for you! Could you please tell me which city you'd like the weather for?",
+      "tool_calls": [],
+      "metrics": {
+        "status": "PASS",
+        "wall_seconds": 7.7640934999999445,
+        "total_seconds": 7.7627564,
+        "load_seconds": 0.004961,
+        "prompt_tokens": 303,
+        "output_tokens": 27,
+        "tokens_per_second": 5.28,
+        "time_to_first_token": "NOT MEASURED (non-streaming API)",
+        "gpu_peak_util_percent": 97,
+        "vram_peak_mib": 23733,
+        "error": null
+      },
+      "pass": true
+    },
+    "context_stability": {
+      "configured_context": 65536,
+      "input_tokens": 22,
+      "output_tokens": 5,
+      "metrics": {
+        "status": "PASS",
+        "wall_seconds": 3.3629096999993635,
+        "total_seconds": 3.3378015,
+        "load_seconds": 0.0040224,
+        "prompt_tokens": 22,
+        "output_tokens": 5,
+        "tokens_per_second": 6.45,
+        "time_to_first_token": "NOT MEASURED (non-streaming API)",
+        "gpu_peak_util_percent": 33,
+        "vram_peak_mib": 23688,
+        "error": null
+      },
+      "pass": true
+    },
+    "stability": {
+      "runs": 3,
+      "successful_runs": 3,
+      "failed_runs": 0,
+      "metrics": [
+        {
+          "status": "PASS",
+          "wall_seconds": 3.0354296999994403,
+          "total_seconds": 3.0135934,
+          "load_seconds": 0.0029395,
+          "prompt_tokens": 19,
+          "output_tokens": 4,
+          "tokens_per_second": 5.26,
+          "time_to_first_token": "NOT MEASURED (non-streaming API)",
+          "gpu_peak_util_percent": 22,
+          "vram_peak_mib": 23708,
+          "error": null
+        },
+        {
+          "status": "PASS",
+          "wall_seconds": 1.3618816999996852,
+          "total_seconds": 1.3410964,
+          "load_seconds": 0.0030842,
+          "prompt_tokens": 19,
+          "output_tokens": 4,
+          "tokens_per_second": 5.34,
+          "time_to_first_token": "NOT MEASURED (non-streaming API)",
+          "gpu_peak_util_percent": 18,
+          "vram_peak_mib": 23685,
+          "error": null
+        },
+        {
+          "status": "PASS",
+          "wall_seconds": 1.3591207999998005,
+          "total_seconds": 1.3578644,
+          "load_seconds": 0.0025872,
+          "prompt_tokens": 19,
+          "output_tokens": 4,
+          "tokens_per_second": 5.3,
+          "time_to_first_token": "NOT MEASURED (non-streaming API)",
+          "gpu_peak_util_percent": 25,
+          "vram_peak_mib": 23685,
+          "error": null
+        }
+      ],
+      "pass": true
+    }
+  },
+  "measurements": {
+    "observed": "GPU/VRAM samples are collected during each API call; TTFT is not measured because calls are non-streaming.",
+    "derived": "tokens_per_second is eval_count divided by eval_duration.",
+    "assumed": "None used as measured values."
+  },
+  "limitations": [
+    "The 27B Q4_K_M model is close to the 24 GB VRAM ceiling at large context sizes.",
+    "Hermes qualification is run separately with a non-default configuration.",
+    "CPU and system RAM utilization are not measured by this script."
+  ],
+  "hermes_integration": {
+    "status": "PASS",
+    "configuration": "C:\\Einrichtung\\05_AI\\qwen-hermes-config.yaml",
+    "hermes_home": "C:\\Einrichtung\\05_AI\\qwen-hermes-home",
+    "model": "qwen3.8",
+    "context_observed_by_ollama_ps": 32768,
+    "processor_observed_by_ollama_ps": "97% CPU / 3% GPU",
+    "latency_seconds": 127.8,
+    "structured_json_response": true,
+    "cloud": "OFF",
+    "api_keys": "NONE",
+    "notes": ["Hermes reached Qwen through the temporary WSL host gateway.", "The separate qualification home left the existing Hermes home/configuration untouched."]
+  },
+  "qualification": {
+    "status": "CONDITIONAL",
+    "recommended_use": ["offline German technical tasks", "structured-output experiments", "controlled tool-intent evaluation", "low-concurrency local research where latency is acceptable"],
+    "not_recommended_for": ["default Keystone model", "interactive low-latency agent work", "high-concurrency workloads", "large-context Hermes sessions on this 24 GB GPU without further tuning"],
+    "reason": "All functional qualification tests and Hermes reachability passed, but the 27.3B Q4_K_M model nearly fills VRAM, Hermes observed 97% CPU / 3% GPU at context 32768, and the measured Hermes response latency was 127.8 seconds."
+  }
+}

@@ -1,0 +1,9 @@
+OLLAMA STATE AFTER GATE 4.5
+Version: 0.34.1
+Path: C:\Einrichtung\05_AI\ollama\ollama.exe
+Installation: official standalone Windows CLI archive
+Process: manually started for test; no service; no scheduled task; no user Run autostart
+Cloud: disabled / not configured
+Model: tinyllama:1.1b-chat
+Retest: PASS; ollama ps reports 100% GPU; RTX 3090 Ti memory observed at approximately 1.87 GiB during retest
+Decision: KEEP stable release; official repository lists 0.34.2-rc0 as pre-release.

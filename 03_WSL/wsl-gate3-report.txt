@@ -1,0 +1,54 @@
+KEYSTONE WORKSTATION
+GATE 3 — WSL2 FOUNDATION
+
+Timestamp: 2026-09-16 06:46 (local)
+
+CURRENT WINDOWS:
+Windows Product: Microsoft Windows 11 Pro (Win32_OperatingSystem)
+Windows Version: 10.0.26200
+Windows Build: 26200
+Registry note: ProductName still reports Windows 10 Pro; DisplayVersion 25H2 and build 26200 are retained as evidence. No OS or boot correction was attempted.
+
+CURRENT SYSTEM:
+System Drive: C:
+Current OS location: C: partition on Disk 0, Samsung SSD 970 EVO Plus 2TB
+Current Boot/System Context: Disk 0 reports IsBoot=True; Disk 1 ADATA reports IsSystem=True/BootFromDisk=True. This contradiction is documented and was not changed.
+Protected disk: Disk 1, ADATA SX8200PNP, approximately 1 TB, untouched.
+
+WSL:
+WSL Version: 2.7.14.0
+WSL Default Version: 2
+WSL Kernel: 6.18.33.2-microsoft-standard-WSL2
+
+DISTRIBUTION:
+Installed Distribution: Ubuntu-24.04
+Distribution Version: Ubuntu 24.04.5 LTS (Noble Numbat)
+Distribution WSL Version: 2
+Distribution State at final check: Running
+
+WINDOWS FEATURES:
+Microsoft-Windows-Subsystem-Linux: effective; WSL 2 is operational. Direct optional-feature query was unavailable because this session was not elevated.
+VirtualMachinePlatform: effective; WSL 2 kernel started successfully. Direct optional-feature query was unavailable because this session was not elevated.
+
+FUNCTIONAL TESTS:
+WSL: PASS
+Windows -> WSL: PASS — WSL_OK
+WSL -> Windows: PASS — WSL_TO_WINDOWS_OK
+Ubuntu starts: PASS
+Ubuntu explicit WSL2: PASS
+
+CHANGES PERFORMED:
+- Set the explicitly supplied global Git identity: winclawftw / winclaw@web.de.
+- Installed Ubuntu-24.04 through `wsl --install --distribution Ubuntu-24.04 --no-launch`.
+- Started Ubuntu and verified kernel, release, and bidirectional communication.
+- Created `wsl-precheck.txt` and this report.
+
+REMAINING ISSUES:
+- ADATA Disk 1 remains reported as a system/boot-related disk by Windows; it is protected and was not modified.
+- Registry ProductName conflicts with the Win32 OS caption; no corrective action was taken.
+- Gate 2 still has the previously recorded 7-Zip PATH-verification failure; `C:\Program Files\7-Zip\7z.exe` exists.
+
+GATE 3: PASS
+NEXT GATE: Gate 4 — GPU / NVIDIA / Ollama / Local AI
+
+STOP — Gate 4 was not executed.

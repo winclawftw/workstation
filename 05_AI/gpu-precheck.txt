@@ -1,0 +1,14 @@
+GATE 4 GPU PRECHECK
+Timestamp: 2026-09-16 06:49 local
+
+Windows nvidia-smi: PASS
+GPU: NVIDIA GeForce RTX 3090 Ti
+Windows driver: 591.86
+CUDA compatibility reported by driver: 13.1
+Memory: 692 MiB / 24564 MiB at initial observation
+
+Win32_VideoController: NVIDIA GeForce RTX 3090 Ti, driver 32.0.15.9186, Status OK
+PnP: NVIDIA GeForce RTX 3090 Ti, Display, Status OK
+NVIDIA High Definition Audio, Media, Status OK
+
+No NVIDIA driver update, cleanup, DDU, BIOS, overclocking, PBO, voltage, or firmware action performed.

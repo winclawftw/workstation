@@ -1,0 +1,46 @@
+GATE 5 — HERMES RUNTIME
+Date: 2026-09-16
+
+Status: PASS
+Hermes was installed in an isolated WSL2 Ubuntu-24.04 environment using the official installer. The runtime is local-only and uses the existing Windows Ollama test server. No cloud provider, API key, autostart service, gateway, production MCP, Docker, PostgreSQL, or Keystone component was added.
+
+Hermes runtime location:
+  Windows-visible: C:\Einrichtung\06_Hermes\app
+  WSL path: /mnt/c/Einrichtung/06_Hermes/app
+  Launcher: /root/.local/bin/hermes
+  Virtual environment: C:\Einrichtung\06_Hermes\app\venv
+
+Hermes project/workspace:
+  Installed source project: C:\Einrichtung\06_Hermes\app
+  Gate-5 one-shot test working directory: WSL root (/); no persistent project workspace was created.
+
+Python environment:
+  WSL Ubuntu Python 3.12.3
+  Hermes venv: C:\Einrichtung\06_Hermes\app\venv
+
+Model/cache location:
+  Ollama model/cache root: C:\Einrichtung\05_AI\models (OLLAMA_MODELS)
+  Models used: tinyllama:1.1b-chat; llama3.2:3b for the Hermes-compatible test.
+
+Config location:
+  C:\Einrichtung\06_Hermes\home\config.yaml
+  HERMES_HOME in WSL: /mnt/c/Einrichtung/06_Hermes/home
+
+Log location:
+  C:\Einrichtung\06_Hermes\home\logs\agent.log
+  C:\Einrichtung\06_Hermes\home\logs\errors.log
+  Supporting Gate-5 logs are in this directory.
+
+WSL FILESYSTEM / PERFORMANCE
+
+Hermes location: Linux Hermes runtime under WSL2, but installed at /mnt/c/Einrichtung/06_Hermes/app; HERMES_HOME is /mnt/c/Einrichtung/06_Hermes/home.
+Runtime environment: Ubuntu-24.04 on WSL2; Python 3.12.3; launcher /root/.local/bin/hermes.
+Filesystem: The Hermes project, venv, config, and logs are on the Windows C: filesystem. findmnt reports C:\ mounted as 9p at /mnt/c. The WSL-native /root filesystem is ext4 and is not used for the Hermes project/data paths.
+Cross-filesystem access: Yes. Linux processes access Windows files through /mnt/c. Ollama runs natively on Windows and Hermes reaches it through the WSL host gateway 172.31.32.1:11434 during the manual test.
+Potential performance impact: Potentially relevant for a future high-I/O Linux workload because repeated file operations, Python imports, virtual-environment access, SQLite/session state, logs, or repository scans cross the WSL/Windows filesystem boundary. No concrete Gate-5 functional or measured performance failure was observed.
+Action required: No immediate migration. Do not move the working installation during Gate 5. For later Keystone architecture, prefer placing Linux-native Hermes source/venv/HERMES_HOME under /home/<user>/... and expose only deliberate artifacts/interfaces on C:\Einrichtung. Keep Windows-native Ollama/model storage on the Windows filesystem.
+Decision: Current Gate 5 remains valid. The current placement is a documented optimization opportunity, not a blocking defect.
+STATUS: DOCUMENTED FOR ARCHITECTURE
+
+Storage protection:
+  ADATA SX8200PNP / Disk 1 was not touched, migrated to, partitioned, formatted, mounted, or used as a target.

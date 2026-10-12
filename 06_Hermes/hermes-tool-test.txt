@@ -1,0 +1,6 @@
+Gate 5 Hermes read-only tool test — 2026-09-16
+Command: hermes chat --provider custom --model llama3.2:3b --reasoning none --toolsets terminal --oneshot -Q
+Prompt: Use the terminal tool to run pwd only. Then report the exact output.
+Observed tool result: /
+Exit code: 0
+Scope: read-only terminal command only; no file mutation, no network tool, no MCP production integration.

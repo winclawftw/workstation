@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-09-16T06:50:00+02:00",
+  "windows_gpu": "NVIDIA GeForce RTX 3090 Ti",
+  "windows_driver": "591.86",
+  "cuda_compatibility_reported": "13.1",
+  "wsl_gpu_passthrough": true,
+  "wsl_nvidia_smi": true,
+  "protected_disk": "Disk 1 ADATA SX8200PNP untouched"
+}

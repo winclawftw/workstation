@@ -1,0 +1,15 @@
+GATE 4 WSL GPU TEST
+Timestamp: 2026-09-16 06:49 local
+
+Distribution: Ubuntu-24.04
+WSL kernel: 6.18.33.2-microsoft-standard-WSL2
+Executable: /usr/lib/wsl/lib/nvidia-smi
+Device node: /dev/dxg present
+
+WSL nvidia-smi: PASS
+GPU: NVIDIA GeForce RTX 3090 Ti
+Driver: 591.86
+CUDA compatibility reported: 13.1
+Memory: 706 MiB / 24564 MiB during passthrough test
+
+No CUDA Toolkit was installed. WSL uses the Windows NVIDIA driver passthrough.

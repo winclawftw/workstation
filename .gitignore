@@ -1,0 +1,66 @@
+# Workstation repository: source, configuration examples and reports only.
+# Large/local runtime state is intentionally excluded.
+
+# AI models, binaries and local runtime state
+# AI model cache is intentionally local and is not uploaded to GitHub.
+05_AI/models/
+# Ollama binaries are local runtime dependencies and are not part of the source repository.
+05_AI/ollama/
+05_AI/qwen-hermes-home/
+05_AI/ollama-windows-amd64.zip
+05_AI/*.log
+05_AI/interactive-runs/
+05_AI/qwen-tests/interactive-runs/
+05_AI/qwen-tests/workspace/
+05_AI/qwen-tests/memory_store.json
+05_AI/qwen-tests/config.json
+05_AI/qwen-tests/qwen-8k-001/
+05_AI/qwen-tests/qwen-8k-002/
+05_AI/qwen-tests/**/raw/
+05_AI/qwen-tests/**/logs/
+
+# Hermes checkout/runtime data; the app directory has its own Git repository.
+06_Hermes/app/
+06_Hermes/home/
+06_Hermes/runtime/
+06_Hermes/workspace/
+06_Hermes/logs/
+06_Hermes/memory/
+06_Hermes/state/
+06_Hermes/core/
+06_Hermes/experience/
+06_Hermes/.git/
+
+# Machine-specific inventories and raw diagnostic logs are retained locally.
+08_Logs/
+09_Debug/
+10_Codex/CODEX_STATE.json
+state/CODEX_STATE.json
+state/machine-manifest.json
+
+# Local secrets and credentials
+**/.env
+**/.env.*
+!**/.env.example
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*credentials*
+**/*secret*
+
+# Python/node/build/cache artifacts
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.venv/
+**/node_modules/
+**/dist/
+**/build/
+**/.mypy_cache/
+**/.ruff_cache/
+
+# OS/editor files
+Thumbs.db
+Desktop.ini
+.DS_Store

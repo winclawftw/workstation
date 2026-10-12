@@ -1,0 +1,49 @@
+GATE 4.5 UPDATE CHECK
+Timestamp: 2026-09-16 local
+
+Component: Windows
+Current: Windows 11 Pro, build 26200 (Win32 caption; registry ProductName remains Windows 10 Pro)
+Latest checked: Windows Update COM search, 0 non-installed/non-hidden updates
+Source: local Microsoft Update Agent query
+Update available: No
+Decision: KEEP
+Reason: No pending updates; no version change or bootloader action warranted.
+Test result: PASS
+
+Component: NVIDIA driver
+Current: 591.86; RTX 3090 Ti operational
+Latest checked: NVIDIA official driver portal, current download metadata is JavaScript-rendered and did not expose a reliable product-specific version in this check
+Source: https://www.nvidia.com/en-us/drivers/
+Update available: Not reliably determinable from official page response
+Decision: KEEP
+Reason: Current driver is stable and passes Windows nvidia-smi, WSL nvidia-smi, and Ollama GPU inference. No blind driver replacement.
+Test result: PASS
+
+Component: Ollama
+Current: 0.34.1 standalone CLI at C:\Einrichtung\05_AI\ollama
+Latest checked: 0.34.1 stable; 0.34.2-rc0 listed as pre-release on official repository
+Source: https://github.com/ollama/ollama/releases and https://docs.ollama.com/windows
+Update available: Pre-release only
+Decision: KEEP
+Reason: Stable local-only CLI is functioning; no benefit/risk justification for a pre-release update.
+Test result: PASS; tinyllama:1.1b-chat, 100% GPU
+
+Component: WSL / Ubuntu
+Current: WSL 2.7.14.0; Ubuntu 24.04.5 LTS; kernel 6.18.33.2-microsoft-standard-WSL2
+Latest checked: apt update; normal Noble updates available
+Source: Ubuntu noble-updates/noble-security repositories configured in Ubuntu
+Update available: Yes
+Decision: CONTROLLED UPDATE
+Reason: Applied apt-get upgrade -y --no-remove; 11 packages upgraded, 9 phased updates deferred by Ubuntu.
+Test result: PASS; WSL GPU passthrough and Ollama GPU inference retested.
+
+Component: CUDA Toolkit
+Current: Not installed
+Latest checked: Not applicable
+Source: local architecture test
+Update available: No action needed
+Decision: KEEP ABSENT
+Reason: WSL nvidia-smi and Ollama GPU inference work through driver passthrough; no toolkit required.
+
+Security: cloud OFF; API keys NONE; autostart NONE; Ollama is manually controllable.
+Storage: ADATA SX8200PNP / Disk 1 unchanged.

@@ -1,0 +1,8 @@
+{
+  "created_at": "2026-10-27T14:40:42.336364+01:00",
+  "windows_root": "C:\\AI_Stack",
+  "selected_wsl_distro": "kali-linux",
+  "windows_api_base": "http://127.0.0.1:8000",
+  "openvino_source_exists": true,
+  "note": "Read-only diagnostics, except model-generated tool-call proposal and exact HexStrike server_health MCP call. No scan tools invoked."
+}

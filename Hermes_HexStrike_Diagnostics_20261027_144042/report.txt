@@ -1,0 +1,2012 @@
+
+========================================================================================
+RUN METADATA
+========================================================================================
+time=2026-10-27T14:40:42.336364+01:00
+python=3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+platform=Windows-11-10.0.26200-SP0
+script=C:\AI_Stack\diagnose_hermes_hexstrike.py
+output_dir=C:\AI_Stack\diagnostics\Hermes_HexStrike_Diagnostics_20261027_144042
+No scans/exploits/payloads, config edits, installations, or service restarts are performed.
+
+
+========================================================================================
+WSL DISTRO DISCOVERY
+========================================================================================
+wsl.exe --list --quiet output:
+kali-linux
+docker-desktop
+
+Selected distro: kali-linux
+Override with HERMES_DIAG_WSL_DISTRO if your Kali distro has a different name.
+
+
+========================================================================================
+WINDOWS SYSTEM / PROCESSES / PORTS
+========================================================================================
+EXIT_CODE: 0
+--- OS ---
+
+
+Caption        : Microsoft Windows 11 Pro
+Version        : 10.0.26200
+BuildNumber    : 26200
+OSArchitecture : 64-Bit
+LastBootUpTime : 26.10.2026 14:55:18
+
+
+
+
+--- PYTHON / POWERSHELL ---
+
+Name           Source                                                             
+----           ------                                                             
+python.exe     C:\Users\SAMSUNG\AppData\Local\Programs\Python\Python312\python.exe
+pwsh.exe       C:\Program Files\PowerShell\7\pwsh.exe                             
+powershell.exe C:\windows\System32\WindowsPowerShell\v1.0\powershell.exe          
+
+
+
+--- RELEVANT PROCESSES ---
+
+
+ProcessId       : 32288
+ParentProcessId : 22952
+Name            : python.exe
+ExecutablePath  : C:\AI_Stack\.venv\Scripts\python.exe
+CommandLine     : "C:\AI_Stack\.venv\Scripts\python.exe" serve_main.py
+
+ProcessId       : 30228
+ParentProcessId : 32288
+Name            : python.exe
+ExecutablePath  : C:\Users\SAMSUNG\AppData\Local\Programs\Python\Python312\python.exe
+CommandLine     : "C:\Users\SAMSUNG\AppData\Local\Programs\Python\Python312\python.exe" serve_main.py
+
+ProcessId       : 11240
+ParentProcessId : 5996
+Name            : python.exe
+ExecutablePath  : C:\Users\SAMSUNG\AppData\Local\Programs\Python\Python312\python.exe
+CommandLine     : "C:\Users\SAMSUNG\AppData\Local\Programs\Python\Python312\python.exe" 
+                  C:\AI_Stack\diagnose_hermes_hexstrike.py
+
+
+
+
+--- RELEVANT LISTENERS ---
+
+LocalAddress LocalPort OwningProcess
+------------ --------- -------------
+0.0.0.0           8000         30228
+
+
+
+--- RECENT MATCHING APPLICATION ERRORS (last 6h) ---
+
+
+========================================================================================
+WINDOWS OPENVINO API TESTS
+========================================================================================
+URL: http://127.0.0.1:8000/health
+STATUS: 200
+ELAPSED: 0.08s
+BODY:
+{"status":"ok","model":"qwen-coder","device":"GPU"}
+
+URL: http://127.0.0.1:8000/v1/models
+STATUS: 200
+ELAPSED: 0.02s
+BODY:
+{"object":"list","data":[{"id":"qwen-coder","object":"model","owned_by":"local-openvino"}]}
+
+--- TOOL-CALL GENERATION PROBE (returned proposal is NOT executed) ---
+URL: http://127.0.0.1:8000/v1/chat/completions
+STATUS: 200
+ELAPSED: 1.81s
+BODY:
+{"id":"chatcmpl-f00e44bb5d284b9581c9264cd20198e1","object":"chat.completion","created":1793108448,"model":"qwen-coder","choices":[{"index":0,"message":{"role":"assistant","content":null,"tool_calls":[{"id":"call_d368c7046e3e49d9876c80f0","type":"function","function":{"name":"server_health","arguments":"{}"}}]},"finish_reason":"tool_calls"}],"usage":{"prompt_tokens":0,"completion_tokens":0,"total_tokens":0}}
+
+
+========================================================================================
+OPENVINO SOURCE FINGERPRINT / RELEVANT EXCERPTS
+========================================================================================
+path=C:\AI_Stack\serve_main.py
+sha256=05bd9f0ebea866e6a91319e668c881f792813fab9389c798201c345220eba2aa
+size=22780
+--- prompt and response parsing (lines 140-395) ---
+140: 
+141: # ---------------------------------------------------------------------------
+142: # Prompt construction
+143: # ---------------------------------------------------------------------------
+144: 
+145: TOOL_MODE_INSTRUCTIONS = """You can either answer the user normally or propose a function call.
+146: The available functions are supplied below. Do not claim a function was executed.
+147: When a function call is needed, output ONLY one valid JSON object in this exact shape:
+148: {"type":"tool_call","tool_calls":[{"name":"FUNCTION_NAME","arguments":{"key":"value"}}]}
+149: For multiple calls, include multiple items in tool_calls.
+150: When no function call is needed, output ONLY:
+151: {"type":"final","content":"your answer"}
+152: Arguments must be a JSON object matching the selected function's parameters schema.
+153: Use only the exact function names supplied. Do not use Markdown fences or text outside the JSON object.
+154: These instructions do not authorize unsafe or out-of-scope actions; follow applicable safety requirements."""
+155: 
+156: 
+157: def content_to_text(content: Any) -> str:
+158:     if content is None:
+159:         return ""
+160:     if isinstance(content, str):
+161:         return content
+162:     # Basic support for OpenAI text-content arrays; image payloads are not supported by this backend.
+163:     if isinstance(content, list):
+164:         parts = []
+165:         for part in content:
+166:             if isinstance(part, dict) and part.get("type") in {"text", "input_text"}:
+167:                 parts.append(str(part.get("text", "")))
+168:             else:
+169:                 parts.append("[non-text content omitted]")
+170:         return "\n".join(parts)
+171:     return json.dumps(content, ensure_ascii=False)
+172: 
+173: 
+174: def format_history_message(message: Dict[str, Any]) -> str:
+175:     role = str(message.get("role", "user"))
+176:     if role not in {"system", "developer", "user", "assistant", "tool"}:
+177:         role = "user"
+178:     content = content_to_text(message.get("content"))
+179: 
+180:     # Preserve prior tool-call history as text. It is context only; nothing is executed here.
+181:     previous_calls = message.get("tool_calls")
+182:     if role == "assistant" and isinstance(previous_calls, list):
+183:         call_lines = []
+184:         for call in previous_calls:
+185:             if not isinstance(call, dict):
+186:                 continue
+187:             fn = call.get("function") or {}
+188:             call_lines.append(
+189:                 f"[Previous tool-call proposal: {fn.get('name', 'unknown')} "
+190:                 f"arguments={fn.get('arguments', '{}')}]"
+191:             )
+192:         if call_lines:
+193:             content = (content + "\n" if content else "") + "\n".join(call_lines)
+194: 
+195:     if role == "tool":
+196:         tool_name = message.get("name", "unknown")
+197:         content = f"Result from tool '{tool_name}':\n{content}"
+198: 
+199:     return f"<|im_start|>{role}\n{content}<|im_end|>"
+200: 
+201: 
+202: def build_prompt(
+203:     messages: List[Dict[str, Any]],
+204:     tool_defs: List[Dict[str, Any]],
+205:     tool_mode: bool,
+206: ) -> str:
+207:     formatted_messages = list(messages)
+208: 
+209:     if tool_mode:
+210:         tool_payload = json.dumps(tool_defs, ensure_ascii=False, separators=(",", ":"))
+211:         system_text = TOOL_MODE_INSTRUCTIONS + "\n\nAvailable functions (JSON):\n" + tool_payload
+212: 
+213:         # Add instructions to an existing system message where possible.
+214:         system_index = next(
+215:             (i for i, msg in enumerate(formatted_messages) if msg.get("role") == "system"),
+216:             None,
+217:         )
+218:         if system_index is not None:
+219:             existing = content_to_text(formatted_messages[system_index].get("content"))
+220:             formatted_messages[system_index] = {
+221:                 **formatted_messages[system_index],
+222:                 "content": existing + "\n\n" + system_text,
+223:             }
+224:         else:
+225:             formatted_messages.insert(0, {"role": "system", "content": system_text})
+226: 
+227:     prompt_lines = [format_history_message(msg) for msg in formatted_messages]
+228:     return "\n".join(prompt_lines) + "\n<|im_start|>assistant\n"
+229: 
+230: 
+231: # ---------------------------------------------------------------------------
+232: # Conservative JSON / schema validation
+233: # ---------------------------------------------------------------------------
+234: 
+235: def extract_json_object(text: str) -> Optional[Dict[str, Any]]:
+236:     """Extract the first balanced JSON object, allowing accidental Markdown fences."""
+237:     if not isinstance(text, str):
+238:         return None
+239:     candidate = text.strip()
+240:     if candidate.startswith("```"):
+241:         candidate = re.sub(r"^```(?:json)?\s*", "", candidate, flags=re.IGNORECASE)
+242:         candidate = re.sub(r"\s*```$", "", candidate)
+243: 
+244:     start = candidate.find("{")
+245:     if start < 0:
+246:         return None
+247:     depth = 0
+248:     in_string = False
+249:     escaped = False
+250:     for index in range(start, len(candidate)):
+251:         char = candidate[index]
+252:         if in_string:
+253:             if escaped:
+254:                 escaped = False
+255:             elif char == "\\":
+256:                 escaped = True
+257:             elif char == '"':
+258:                 in_string = False
+259:             continue
+260:         if char == '"':
+261:             in_string = True
+262:         elif char == "{":
+263:             depth += 1
+264:         elif char == "}":
+265:             depth -= 1
+266:             if depth == 0:
+267:                 try:
+268:                     value = json.loads(candidate[start:index + 1])
+269:                     return value if isinstance(value, dict) else None
+270:                 except json.JSONDecodeError:
+271:                     return None
+272:     return None
+273: 
+274: 
+275: def schema_errors(value: Any, schema: Dict[str, Any], path: str = "$") -> List[str]:
+276:     """Validate common JSON Schema keywords; intentionally not a full JSON Schema engine."""
+277:     errors: List[str] = []
+278:     expected = schema.get("type")
+279: 
+280:     type_checks = {
+281:         "object": lambda v: isinstance(v, dict),
+282:         "array": lambda v: isinstance(v, list),
+283:         "string": lambda v: isinstance(v, str),
+284:         "integer": lambda v: isinstance(v, int) and not isinstance(v, bool),
+285:         "number": lambda v: isinstance(v, (int, float)) and not isinstance(v, bool),
+286:         "boolean": lambda v: isinstance(v, bool),
+287:         "null": lambda v: v is None,
+288:     }
+289:     if expected in type_checks and not type_checks[expected](value):
+290:         return [f"{path} must be {expected}"]
+291: 
+292:     if "enum" in schema and value not in schema["enum"]:
+293:         errors.append(f"{path} must be one of the allowed enum values")
+294: 
+295:     if isinstance(value, dict):
+296:         required = schema.get("required", [])
+297:         for key in required:
+298:             if key not in value:
+299:                 errors.append(f"{path}.{key} is required")
+300:         properties = schema.get("properties", {})
+301:         if isinstance(properties, dict):
+302:             for key, child_value in value.items():
+303:                 if key in properties and isinstance(properties[key], dict):
+304:                     errors.extend(schema_errors(child_value, properties[key], f"{path}.{key}"))
+305:                 elif schema.get("additionalProperties") is False and key not in properties:
+306:                     errors.append(f"{path}.{key} is not allowed")
+307:     elif isinstance(value, list):
+308:         item_schema = schema.get("items")
+309:         if isinstance(item_schema, dict):
+310:             for index, item in enumerate(value):
+311:                 errors.extend(schema_errors(item, item_schema, f"{path}[{index}]"))
+312: 
+313:     if isinstance(value, str):
+314:         if isinstance(schema.get("minLength"), int) and len(value) < schema["minLength"]:
+315:             errors.append(f"{path} is shorter than minLength")
+316:         if isinstance(schema.get("maxLength"), int) and len(value) > schema["maxLength"]:
+317:             errors.append(f"{path} is longer than maxLength")
+318:         pattern = schema.get("pattern")
+319:         if isinstance(pattern, str):
+320:             try:
+321:                 if re.search(pattern, value) is None:
+322:                     errors.append(f"{path} does not match pattern")
+323:             except re.error:
+324:                 errors.append(f"{path} has a schema with an invalid pattern")
+325: 
+326:     if isinstance(value, (int, float)) and not isinstance(value, bool):
+327:         if isinstance(schema.get("minimum"), (int, float)) and value < schema["minimum"]:
+328:             errors.append(f"{path} is below minimum")
+329:         if isinstance(schema.get("maximum"), (int, float)) and value > schema["maximum"]:
+330:             errors.append(f"{path} is above maximum")
+331: 
+332:     return errors
+333: 
+334: 
+335: def parse_tool_mode_response(
+336:     response_text: str,
+337:     tool_defs: List[Dict[str, Any]],
+338:     mode: str,
+339:     required_name: Optional[str],
+340: ) -> Dict[str, Any]:
+341:     parsed = extract_json_object(response_text)
+342:     if not isinstance(parsed, dict):
+343:         if mode in {"required", "named"}:
+344:             raise HTTPException(
+345:                 status_code=502,
+346:                 detail="Model did not return the required structured tool-call JSON. No tool was executed.",
+347:             )
+348:         # In auto mode, malformed wrapper JSON is a normal assistant answer, not a tool call.
+349:         return {"kind": "final", "content": response_text.strip()}
+350: 
+351:     kind = parsed.get("type")
+352:     if kind == "final" and isinstance(parsed.get("content"), str):
+353:         if mode in {"required", "named"}:
+354:             raise HTTPException(
+355:                 status_code=502,
+356:                 detail="Model returned a final answer although tool_choice requires a tool call. No tool was executed.",
+357:             )
+358:         return {"kind": "final", "content": parsed["content"]}
+359: 
+360:     if kind != "tool_call" or not isinstance(parsed.get("tool_calls"), list):
+361:         if mode in {"required", "named"}:
+362:             raise HTTPException(status_code=502, detail="Model returned an invalid tool-call envelope. No tool was executed.")
+363:         return {"kind": "final", "content": response_text.strip()}
+364: 
+365:     available = {item["name"]: item for item in tool_defs}
+366:     normalized_calls = []
+367:     for item in parsed["tool_calls"]:
+368:         if not isinstance(item, dict):
+369:             raise HTTPException(status_code=502, detail="Model returned a malformed tool call.")
+370:         name = item.get("name")
+371:         arguments = item.get("arguments")
+372:         if not isinstance(name, str) or name not in available:
+373:             raise HTTPException(status_code=502, detail=f"Model proposed an unknown function: {name!r}. No tool was executed.")
+374:         if mode == "named" and name != required_name:
+375:             raise HTTPException(status_code=502, detail=f"Model did not call the required function {required_name!r}.")
+376:         if not isinstance(arguments, dict):
+377:             raise HTTPException(status_code=502, detail=f"Arguments for {name} must be a JSON object.")
+378: 
+379:         errors = schema_errors(arguments, available[name]["parameters"])
+380:         if errors:
+381:             raise HTTPException(
+382:                 status_code=502,
+383:                 detail=f"Invalid arguments for {name}: {'; '.join(errors[:8])}. No tool was executed.",
+384:             )
+385:         normalized_calls.append({"name": name, "arguments": arguments})
+386: 
+387:     if not normalized_calls:
+388:         raise HTTPException(status_code=502, detail="Model returned an empty tool-call list.")
+389: 
+390:     if mode == "required" and not normalized_calls:
+391:         raise HTTPException(status_code=502, detail="tool_choice=required but no tool call was returned.")
+392: 
+393:     return {"kind": "tool_calls", "calls": normalized_calls}
+394: 
+395: 
+
+--- API route and response conversion (lines 400-550) ---
+400: @app.get("/health")
+401: def health():
+402:     return {"status": "ok", "model": "qwen-coder", "device": DEVICE}
+403: 
+404: 
+405: @app.get("/v1/models")
+406: [REDACTED]
+407: [REDACTED]
+408:     return {
+409:         "object": "list",
+410:         "data": [{"id": "qwen-coder", "object": "model", "owned_by": "local-openvino"}],
+411:     }
+412: 
+413: 
+414: @app.post("/v1/chat/completions")
+415: def chat_completions(
+416:     req: ChatCompletionRequest,
+417: [REDACTED]
+418: ):
+419: [REDACTED]
+420: 
+421:     if not req.messages:
+422:         raise HTTPException(status_code=400, detail="messages must not be empty.")
+423:     if req.max_tokens is not None and req.max_tokens < 1:
+424:         raise HTTPException(status_code=400, detail="max_tokens must be greater than zero.")
+425:     if req.temperature is not None and req.temperature < 0:
+426:         raise HTTPException(status_code=400, detail="temperature must be >= 0.")
+427:     if req.top_p is not None and not (0 < req.top_p <= 1):
+428:         raise HTTPException(status_code=400, detail="top_p must be in the interval (0, 1].")
+429: 
+430:     mode, required_name = normalize_tool_choice(req.tool_choice)
+431:     tool_defs = get_tool_definitions(req.tools)
+432: 
+433:     if mode in {"required", "named"} and not tool_defs:
+434:         raise HTTPException(status_code=400, detail="tool_choice requires at least one declared tool.")
+435:     if mode == "named" and required_name not in {tool["name"] for tool in tool_defs}:
+436:         raise HTTPException(status_code=400, detail=f"Required function {required_name!r} was not declared.")
+437: 
+438:     tool_mode = bool(tool_defs) and mode != "none"
+439:     active_tools = tool_defs if tool_mode else []
+440:     prompt = build_prompt(req.messages, active_tools, tool_mode)
+441: 
+442:     gen_config = og.GenerationConfig()
+443:     gen_config.max_new_tokens = req.max_tokens if req.max_tokens is not None else 1024
+444:     gen_config.temperature = req.temperature if req.temperature is not None else 0.2
+445:     gen_config.top_p = req.top_p if req.top_p is not None else 0.95
+446: 
+447:     start_time = time.time()
+448:     try:
+449:         with inference_lock:
+450:             raw_result = pipe.generate(prompt, generation_config=gen_config)
+451:         response_text = str(raw_result).strip()
+452:     except HTTPException:
+453:         raise
+454:     except Exception as err:
+455:         print(f"[!] Inference error: {type(err).__name__}: {err}")
+456:         raise HTTPException(status_code=500, detail="Model inference failed. Check the backend console.")
+457: 
+458:     for stop_token in ("<|im_end|>", "<|endoftext|>"):
+459:         if stop_token in response_text:
+460:             response_text = response_text.split(stop_token, 1)[0].strip()
+461: 
+462:     if not response_text:
+463:         raise HTTPException(status_code=502, detail="Model returned an empty response.")
+464: 
+465:     if tool_mode:
+466:         parsed = parse_tool_mode_response(response_text, active_tools, mode, required_name)
+467:     else:
+468:         parsed = {"kind": "final", "content": response_text}
+469: 
+470:     elapsed = time.time() - start_time
+471:     print(
+472:         f"[request] messages={len(req.messages)} tools={len(active_tools)} "
+473:         f"mode={mode} result={parsed['kind']} elapsed={elapsed:.2f}s"
+474:     )
+475: 
+476:     message: Dict[str, Any]
+477:     finish_reason: str
+478:     if parsed["kind"] == "tool_calls":
+479:         calls = []
+480:         for call in parsed["calls"]:
+481:             calls.append({
+482:                 "id": f"call_{uuid.uuid4().hex[:24]}",
+483:                 "type": "function",
+484:                 "function": {
+485:                     "name": call["name"],
+486:                     "arguments": json.dumps(call["arguments"], ensure_ascii=False, separators=(",", ":")),
+487:                 },
+488:             })
+489:         message = {"role": "assistant", "content": None, "tool_calls": calls}
+490:         finish_reason = "tool_calls"
+491:     else:
+492:         message = {"role": "assistant", "content": parsed["content"]}
+493:         finish_reason = "stop"
+494: 
+495:     now = int(time.time())
+496:     resp_id = f"chatcmpl-{uuid.uuid4().hex}"
+497: 
+498:     # --- NEU: Streaming Support (Fake-Stream) ---
+499:     if req.stream:
+500:         def stream_generator():
+501:             # Chunk 1: Content oder Tool Calls
+502:             if parsed["kind"] == "tool_calls":
+503:                 delta = {
+504:                     "role": "assistant",
+505:                     "tool_calls": [
+506:                         {
+507:                             "index": i,
+508:                             "id": call["id"],
+509:                             "type": "function",
+510:                             "function": call["function"]
+511:                         } for i, call in enumerate(calls)
+512:                     ]
+513:                 }
+514:             else:
+515:                 delta = {"role": "assistant", "content": parsed["content"]}
+516: 
+517:             chunk1 = {
+518:                 "id": resp_id,
+519:                 "object": "chat.completion.chunk",
+520:                 "created": now,
+521:                 "model": req.model or "qwen-coder",
+522:                 "choices": [{"index": 0, "delta": delta, "finish_reason": None}]
+523:             }
+524:             yield f"data: {json.dumps(chunk1, ensure_ascii=False)}\n\n"
+525: 
+526:             # Chunk 2: Finish
+527:             chunk2 = {
+528:                 "id": resp_id,
+529:                 "object": "chat.completion.chunk",
+530:                 "created": now,
+531:                 "model": req.model or "qwen-coder",
+532:                 "choices": [{"index": 0, "delta": {}, "finish_reason": finish_reason}]
+533:             }
+534:             yield f"data: {json.dumps(chunk2, ensure_ascii=False)}\n\n"
+535:             yield "data: [DONE]\n\n"
+536: 
+537:         return StreamingResponse(stream_generator(), media_type="text/event-stream")
+538: 
+539:     # --- Normaler Return (Non-Streaming) ---
+540:     return {
+541:         "id": resp_id,
+542:         "object": "chat.completion",
+543:         "created": now,
+544:         "model": req.model or "qwen-coder",
+545:         "choices": [{"index": 0, "message": message, "finish_reason": finish_reason}],
+546:         # OpenVINO pipeline does not currently expose compatible token usage here.
+547:         "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+548:     }
+549: 
+550:
+
+
+========================================================================================
+WINDOWS SAVED LOG TAILS
+========================================================================================
+FILE: C:\Users\SAMSUNG\AppData\Local\hermes\logs\agent.log
+SIZE: 1973619
+--- last 400 lines ---
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1005, in request
+    response = self._client.send(
+        request,
+        stream=stream or self._should_stream_response_body(request=request),
+        **kwargs,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\process_bootstrap.py", line 220, in handle_request
+    return self._inner.handle_request(request)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3756, in _call
+    self.result["response"] = _with_stream_emitters(
+                              ~~~~~~~~~~~~~~~~~~~~~^
+        self.agent, lambda: self._call_wire(stream_attempt_id))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2532, in _with_stream_emitters
+    response = run()
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3757, in <lambda>
+    self.agent, lambda: self._call_wire(stream_attempt_id))
+                        ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3733, in _call_wire
+    return self._call_chat_completions(stream_attempt_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3078, in _call_chat_completions
+    stream = self._set_managed_stream(relay_llm.stream(self.api_kwargs, _open_stream,
+                                      ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        **_relay_stream_identity(self.agent, "provider"), finalizer=relay_response.finalize,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        completed_response_predicate=lambda value: hasattr(value, "choices"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        metadata=_relay_stream_metadata(self.agent, "chat_completions"), defer_logical_completion=True))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 331, in __init__
+    self._start_unmanaged(request)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 337, in _start_unmanaged
+    raw_stream = self._stream_factory(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3069, in _open_stream
+    return self._open_chat_stream({**next_api_kwargs, "stream": True, "timeout": timeout})
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2966, in _open_chat_stream
+    return request_client.chat.completions.create(**stream_kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_utils\_utils.py", line 286, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\resources\chat\completions\completions.py", line 1204, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<47 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1297, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1037, in request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.
+2026-10-18 23:55:32,906 INFO run_agent: OpenAI client closed (stream_error_cleanup, shared=False, tcp_force_closed=0) thread=Thread-53 (<lambda>):7724 provider=custom base_url=http://127.0.0.1:6969/v1 model=gemma-4-e4b
+2026-10-18 23:55:32,914 WARNING [20261018_235509_be3c50] agent.conversation_loop: API call failed (attempt 2/3) error_type=APIConnectionError thread=Thread-51 (_chat_run_agent):27384 provider=custom base_url=http://127.0.0.1:6969/v1 model=gemma-4-e4b summary=Connection error.
+2026-10-18 23:55:32,919 WARNING [20261018_235509_be3c50] agent.conversation_loop: Retrying API call in 5.678324430407816s (attempt 2/3) thread=Thread-51 (_chat_run_agent):27384 provider=custom base_url=http://127.0.0.1:6969/v1 model=gemma-4-e4b policy=default error=Connection error.
+2026-10-18 23:55:33,573 INFO run_agent: Interrupt requested (hard): explicit stop requested
+2026-10-18 23:55:57,670 INFO agent.model_metadata: Could not detect context length for model 'qwen3-8b' at http://127.0.0.1:6969/v1 — defaulting to 256,000 tokens (probe-down). Set model.context_length in config.yaml to override.
+2026-10-18 23:55:57,671 INFO agent.model_metadata: Using hardcoded context length 131,072 for model 'qwen3-8b' (custom endpoint, catalog match on 'qwen')
+2026-10-18 23:55:57,675 INFO run_agent: OpenAI client created (switch_model, shared=True) thread=Thread-54 (_confirm_and_apply_model_switch_result):24760 provider=qwen base_url=http://127.0.0.1:6969/v1 model=qwen3-8b
+2026-10-18 23:56:01,773 INFO agent.model_metadata: Could not detect context length for model 'qwen3-8b' at http://127.0.0.1:6969/v1 — defaulting to 256,000 tokens (probe-down). Set model.context_length in config.yaml to override.
+2026-10-18 23:56:01,773 INFO agent.model_metadata: Using hardcoded context length 131,072 for model 'qwen3-8b' (custom endpoint, catalog match on 'qwen')
+2026-10-18 23:56:01,778 INFO agent.auxiliary_client: Auxiliary auto-detect: using main provider qwen (qwen3-8b)
+2026-10-18 23:56:01,778 INFO agent.agent_runtime_helpers: switch_model: reasoning_config resolved for qwen3-8b: None
+2026-10-18 23:56:01,779 INFO agent.agent_runtime_helpers: Model switched in-place: gemma-4-e4b (custom) -> qwen3-8b (qwen)
+2026-10-18 23:56:05,885 INFO agent.model_metadata: Could not detect context length for model 'qwen3-8b' at http://127.0.0.1:6969/v1 — defaulting to 256,000 tokens (probe-down). Set model.context_length in config.yaml to override.
+2026-10-18 23:56:05,886 INFO agent.model_metadata: Using hardcoded context length 131,072 for model 'qwen3-8b' (custom endpoint, catalog match on 'qwen')
+2026-10-18 23:56:05,948 INFO run_agent: Shared OpenAI client retired (cache_evict, tcp_shutdown=0, fd_release=deferred_to_gc) thread=Thread-45 (_tui_process_loop):27660 provider=qwen base_url=http://127.0.0.1:6969/v1 model=qwen3-8b
+2026-10-18 23:56:05,965 INFO run_agent: OpenAI client created (agent_init, shared=True) thread=Thread-45 (_tui_process_loop):27660 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b
+2026-10-18 23:56:10,057 INFO agent.model_metadata: Could not detect context length for model 'qwen3-8b' at http://127.0.0.1:6969/v1 — defaulting to 256,000 tokens (probe-down). Set model.context_length in config.yaml to override.
+2026-10-18 23:56:10,057 INFO agent.model_metadata: Using hardcoded context length 131,072 for model 'qwen3-8b' (custom endpoint, catalog match on 'qwen')
+2026-10-18 23:56:10,089 INFO [20261018_235509_be3c50] agent.turn_context: conversation turn: session=20261018_235509_be3c50 model=qwen3-8b provider=custom platform=cli history=2 msg='[Note: model was just switched from gemma-4-e4b to qwen3-8b via Alibaba. Adjust ...'
+2026-10-18 23:56:10,089 INFO [20261018_235509_be3c50] agent.conversation_loop: Stored system prompt for session 20261018_235509_be3c50 has stale runtime identity; rebuilding for model=qwen3-8b provider=custom.
+2026-10-18 23:56:10,125 INFO run_agent: OpenAI client created (chat_completion_stream_request, shared=False) thread=Thread-56 (<lambda>):31264 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b
+2026-10-18 23:56:12,163 ERROR agent.chat_completion_helpers: Streaming failed before delivery: Connection error.
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1005, in request
+    response = self._client.send(
+        request,
+        stream=stream or self._should_stream_response_body(request=request),
+        **kwargs,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\process_bootstrap.py", line 220, in handle_request
+    return self._inner.handle_request(request)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3756, in _call
+    self.result["response"] = _with_stream_emitters(
+                              ~~~~~~~~~~~~~~~~~~~~~^
+        self.agent, lambda: self._call_wire(stream_attempt_id))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2532, in _with_stream_emitters
+    response = run()
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3757, in <lambda>
+    self.agent, lambda: self._call_wire(stream_attempt_id))
+                        ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3733, in _call_wire
+    return self._call_chat_completions(stream_attempt_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3078, in _call_chat_completions
+    stream = self._set_managed_stream(relay_llm.stream(self.api_kwargs, _open_stream,
+                                      ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        **_relay_stream_identity(self.agent, "provider"), finalizer=relay_response.finalize,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        completed_response_predicate=lambda value: hasattr(value, "choices"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        metadata=_relay_stream_metadata(self.agent, "chat_completions"), defer_logical_completion=True))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 331, in __init__
+    self._start_unmanaged(request)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 337, in _start_unmanaged
+    raw_stream = self._stream_factory(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3069, in _open_stream
+    return self._open_chat_stream({**next_api_kwargs, "stream": True, "timeout": timeout})
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2966, in _open_chat_stream
+    return request_client.chat.completions.create(**stream_kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_utils\_utils.py", line 286, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\resources\chat\completions\completions.py", line 1204, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<47 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1297, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1037, in request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.
+2026-10-18 23:56:12,163 INFO run_agent: OpenAI client closed (stream_error_cleanup, shared=False, tcp_force_closed=0) thread=Thread-56 (<lambda>):31264 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b
+2026-10-18 23:56:12,176 WARNING [20261018_235509_be3c50] agent.conversation_loop: API call failed (attempt 1/3) error_type=APIConnectionError thread=Thread-55 (_chat_run_agent):31332 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b summary=Connection error.
+2026-10-18 23:56:12,177 WARNING [20261018_235509_be3c50] agent.conversation_loop: Retrying API call in 2.9200388192727615s (attempt 1/3) thread=Thread-55 (_chat_run_agent):31332 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b policy=default error=Connection error.
+2026-10-18 23:56:15,191 INFO run_agent: OpenAI client created (chat_completion_stream_request, shared=False) thread=Thread-57 (<lambda>):19848 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b
+2026-10-18 23:56:15,779 INFO run_agent: Interrupt requested (hard): explicit stop requested
+2026-10-18 23:56:15,791 WARNING [20261018_235509_be3c50] run_agent: OpenAI client aborted (stream_interrupt_abort, shared=False, tcp_force_closed=0, deferred_close=stranger_thread) thread=Thread-55 (_chat_run_agent):31332 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b — no sockets found; in-flight request may keep running until the provider finishes
+2026-10-18 23:56:15,794 INFO [20261018_235509_be3c50] agent.conversation_loop: Turn ended: reason=interrupted_during_api_call model=qwen3-8b api_calls=1/500 budget=1/500 tool_turns=0 last_msg_role=user response_len=65 session=20261018_235509_be3c50
+2026-10-18 23:56:15,802 INFO agent.auxiliary_client: Auxiliary auto-detect: using main provider custom (qwen3-8b)
+2026-10-18 23:56:15,803 INFO agent.auxiliary_client: Auxiliary title_generation: using custom (qwen3-8b) at http://127.0.0.1:6969/v1/
+2026-10-18 23:56:17,231 INFO run_agent: OpenAI client closed (stream_error_cleanup, shared=False, tcp_force_closed=0) thread=Thread-57 (<lambda>):19848 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b
+2026-10-18 23:56:17,891 INFO agent.auxiliary_client: Auxiliary title_generation: transient transport error (attempt 1/2); retrying same provider after 1.0s before fallback: Connection error.
+2026-10-18 23:56:20,933 INFO agent.auxiliary_client: Auxiliary title_generation: transient transport error (attempt 2/2); retrying same provider after 2.0s before fallback: Connection error.
+2026-10-18 23:56:24,985 INFO agent.auxiliary_client: Auxiliary title_generation: connection error on auto (Connection error.), trying fallback
+2026-10-18 23:56:25,008 WARNING agent.auxiliary_client: Auxiliary title_generation: main provider custom is unavailable and no fallback_chain / fallback_providers is configured — refusing to guess another logged-in provider. Re-authenticate (`hermes model`) or declare a fallback.
+2026-10-18 23:56:25,008 WARNING agent.auxiliary_client: Auxiliary title_generation: connection error on auto and all fallbacks exhausted (fallback_chain + main agent model). Raising the primary error.
+2026-10-18 23:56:25,009 WARNING agent.title_generator: Title generation failed: Connection error.
+2026-10-18 23:57:00,542 INFO [20261018_235509_be3c50] agent.turn_context: conversation turn: session=20261018_235509_be3c50 model=qwen3-8b provider=custom platform=cli history=4 msg='Kannst du meinen PC aufräumen'
+2026-10-18 23:57:00,557 INFO run_agent: OpenAI client created (chat_completion_stream_request, shared=False) thread=Thread-60 (<lambda>):21572 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b
+2026-10-18 23:57:02,592 ERROR agent.chat_completion_helpers: Streaming failed before delivery: Connection error.
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1005, in request
+    response = self._client.send(
+        request,
+        stream=stream or self._should_stream_response_body(request=request),
+        **kwargs,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\process_bootstrap.py", line 220, in handle_request
+    return self._inner.handle_request(request)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3756, in _call
+    self.result["response"] = _with_stream_emitters(
+                              ~~~~~~~~~~~~~~~~~~~~~^
+        self.agent, lambda: self._call_wire(stream_attempt_id))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2532, in _with_stream_emitters
+    response = run()
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3757, in <lambda>
+    self.agent, lambda: self._call_wire(stream_attempt_id))
+                        ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3733, in _call_wire
+    return self._call_chat_completions(stream_attempt_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3078, in _call_chat_completions
+    stream = self._set_managed_stream(relay_llm.stream(self.api_kwargs, _open_stream,
+                                      ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        **_relay_stream_identity(self.agent, "provider"), finalizer=relay_response.finalize,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        completed_response_predicate=lambda value: hasattr(value, "choices"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        metadata=_relay_stream_metadata(self.agent, "chat_completions"), defer_logical_completion=True))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 331, in __init__
+    self._start_unmanaged(request)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 337, in _start_unmanaged
+    raw_stream = self._stream_factory(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3069, in _open_stream
+    return self._open_chat_stream({**next_api_kwargs, "stream": True, "timeout": timeout})
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2966, in _open_chat_stream
+    return request_client.chat.completions.create(**stream_kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_utils\_utils.py", line 286, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\resources\chat\completions\completions.py", line 1204, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<47 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1297, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1037, in request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.
+2026-10-18 23:57:02,593 INFO run_agent: OpenAI client closed (stream_error_cleanup, shared=False, tcp_force_closed=0) thread=Thread-60 (<lambda>):21572 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b
+2026-10-18 23:57:02,601 WARNING [20261018_235509_be3c50] agent.conversation_loop: API call failed (attempt 1/3) error_type=APIConnectionError thread=Thread-59 (_chat_run_agent):32048 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b summary=Connection error.
+2026-10-18 23:57:02,601 WARNING [20261018_235509_be3c50] agent.conversation_loop: Retrying API call in 2.7571119617853683s (attempt 1/3) thread=Thread-59 (_chat_run_agent):32048 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b policy=default error=Connection error.
+2026-10-18 23:57:03,776 INFO run_agent: Interrupt requested (hard): explicit stop requested
+
+FILE: C:\Users\SAMSUNG\AppData\Local\hermes\logs\errors.log
+SIZE: 1302300
+--- last 400 lines ---
+    raw_stream = self._stream_factory(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3069, in _open_stream
+    return self._open_chat_stream({**next_api_kwargs, "stream": True, "timeout": timeout})
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2966, in _open_chat_stream
+    return request_client.chat.completions.create(**stream_kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_utils\_utils.py", line 286, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\resources\chat\completions\completions.py", line 1204, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<47 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1297, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1037, in request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.
+2026-10-18 23:55:28,644 WARNING [20261018_235509_be3c50] agent.conversation_loop: API call failed (attempt 1/3) error_type=APIConnectionError thread=Thread-51 (_chat_run_agent):27384 provider=custom base_url=http://127.0.0.1:6969/v1 model=gemma-4-e4b summary=Connection error.
+2026-10-18 23:55:28,645 WARNING [20261018_235509_be3c50] agent.conversation_loop: Retrying API call in 2.0059237499343996s (attempt 1/3) thread=Thread-51 (_chat_run_agent):27384 provider=custom base_url=http://127.0.0.1:6969/v1 model=gemma-4-e4b policy=default error=Connection error.
+2026-10-18 23:55:32,906 ERROR agent.chat_completion_helpers: Streaming failed before delivery: Connection error.
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1005, in request
+    response = self._client.send(
+        request,
+        stream=stream or self._should_stream_response_body(request=request),
+        **kwargs,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\process_bootstrap.py", line 220, in handle_request
+    return self._inner.handle_request(request)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3756, in _call
+    self.result["response"] = _with_stream_emitters(
+                              ~~~~~~~~~~~~~~~~~~~~~^
+        self.agent, lambda: self._call_wire(stream_attempt_id))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2532, in _with_stream_emitters
+    response = run()
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3757, in <lambda>
+    self.agent, lambda: self._call_wire(stream_attempt_id))
+                        ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3733, in _call_wire
+    return self._call_chat_completions(stream_attempt_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3078, in _call_chat_completions
+    stream = self._set_managed_stream(relay_llm.stream(self.api_kwargs, _open_stream,
+                                      ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        **_relay_stream_identity(self.agent, "provider"), finalizer=relay_response.finalize,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        completed_response_predicate=lambda value: hasattr(value, "choices"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        metadata=_relay_stream_metadata(self.agent, "chat_completions"), defer_logical_completion=True))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 331, in __init__
+    self._start_unmanaged(request)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 337, in _start_unmanaged
+    raw_stream = self._stream_factory(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3069, in _open_stream
+    return self._open_chat_stream({**next_api_kwargs, "stream": True, "timeout": timeout})
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2966, in _open_chat_stream
+    return request_client.chat.completions.create(**stream_kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_utils\_utils.py", line 286, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\resources\chat\completions\completions.py", line 1204, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<47 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1297, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1037, in request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.
+2026-10-18 23:55:32,914 WARNING [20261018_235509_be3c50] agent.conversation_loop: API call failed (attempt 2/3) error_type=APIConnectionError thread=Thread-51 (_chat_run_agent):27384 provider=custom base_url=http://127.0.0.1:6969/v1 model=gemma-4-e4b summary=Connection error.
+2026-10-18 23:55:32,919 WARNING [20261018_235509_be3c50] agent.conversation_loop: Retrying API call in 5.678324430407816s (attempt 2/3) thread=Thread-51 (_chat_run_agent):27384 provider=custom base_url=http://127.0.0.1:6969/v1 model=gemma-4-e4b policy=default error=Connection error.
+2026-10-18 23:56:12,163 ERROR agent.chat_completion_helpers: Streaming failed before delivery: Connection error.
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1005, in request
+    response = self._client.send(
+        request,
+        stream=stream or self._should_stream_response_body(request=request),
+        **kwargs,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\process_bootstrap.py", line 220, in handle_request
+    return self._inner.handle_request(request)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3756, in _call
+    self.result["response"] = _with_stream_emitters(
+                              ~~~~~~~~~~~~~~~~~~~~~^
+        self.agent, lambda: self._call_wire(stream_attempt_id))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2532, in _with_stream_emitters
+    response = run()
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3757, in <lambda>
+    self.agent, lambda: self._call_wire(stream_attempt_id))
+                        ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3733, in _call_wire
+    return self._call_chat_completions(stream_attempt_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3078, in _call_chat_completions
+    stream = self._set_managed_stream(relay_llm.stream(self.api_kwargs, _open_stream,
+                                      ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        **_relay_stream_identity(self.agent, "provider"), finalizer=relay_response.finalize,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        completed_response_predicate=lambda value: hasattr(value, "choices"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        metadata=_relay_stream_metadata(self.agent, "chat_completions"), defer_logical_completion=True))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 331, in __init__
+    self._start_unmanaged(request)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 337, in _start_unmanaged
+    raw_stream = self._stream_factory(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3069, in _open_stream
+    return self._open_chat_stream({**next_api_kwargs, "stream": True, "timeout": timeout})
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2966, in _open_chat_stream
+    return request_client.chat.completions.create(**stream_kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_utils\_utils.py", line 286, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\resources\chat\completions\completions.py", line 1204, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<47 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1297, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1037, in request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.
+2026-10-18 23:56:12,176 WARNING [20261018_235509_be3c50] agent.conversation_loop: API call failed (attempt 1/3) error_type=APIConnectionError thread=Thread-55 (_chat_run_agent):31332 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b summary=Connection error.
+2026-10-18 23:56:12,177 WARNING [20261018_235509_be3c50] agent.conversation_loop: Retrying API call in 2.9200388192727615s (attempt 1/3) thread=Thread-55 (_chat_run_agent):31332 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b policy=default error=Connection error.
+2026-10-18 23:56:15,791 WARNING [20261018_235509_be3c50] run_agent: OpenAI client aborted (stream_interrupt_abort, shared=False, tcp_force_closed=0, deferred_close=stranger_thread) thread=Thread-55 (_chat_run_agent):31332 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b — no sockets found; in-flight request may keep running until the provider finishes
+2026-10-18 23:56:25,008 WARNING agent.auxiliary_client: Auxiliary title_generation: main provider custom is unavailable and no fallback_chain / fallback_providers is configured — refusing to guess another logged-in provider. Re-authenticate (`hermes model`) or declare a fallback.
+2026-10-18 23:56:25,008 WARNING agent.auxiliary_client: Auxiliary title_generation: connection error on auto and all fallbacks exhausted (fallback_chain + main agent model). Raising the primary error.
+2026-10-18 23:56:25,009 WARNING agent.title_generator: Title generation failed: Connection error.
+2026-10-18 23:57:02,592 ERROR agent.chat_completion_helpers: Streaming failed before delivery: Connection error.
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1005, in request
+    response = self._client.send(
+        request,
+        stream=stream or self._should_stream_response_body(request=request),
+        **kwargs,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\process_bootstrap.py", line 220, in handle_request
+    return self._inner.handle_request(request)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\tools\python-3.14.7+202****0901-win32-x64\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 10061] Unknown error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3756, in _call
+    self.result["response"] = _with_stream_emitters(
+                              ~~~~~~~~~~~~~~~~~~~~~^
+        self.agent, lambda: self._call_wire(stream_attempt_id))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2532, in _with_stream_emitters
+    response = run()
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3757, in <lambda>
+    self.agent, lambda: self._call_wire(stream_attempt_id))
+                        ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3733, in _call_wire
+    return self._call_chat_completions(stream_attempt_id)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3078, in _call_chat_completions
+    stream = self._set_managed_stream(relay_llm.stream(self.api_kwargs, _open_stream,
+                                      ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        **_relay_stream_identity(self.agent, "provider"), finalizer=relay_response.finalize,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        completed_response_predicate=lambda value: hasattr(value, "choices"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        metadata=_relay_stream_metadata(self.agent, "chat_completions"), defer_logical_completion=True))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 331, in __init__
+    self._start_unmanaged(request)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\relay_llm.py", line 337, in _start_unmanaged
+    raw_stream = self._stream_factory(request)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 3069, in _open_stream
+    return self._open_chat_stream({**next_api_kwargs, "stream": True, "timeout": timeout})
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\agent\chat_completion_helpers.py", line 2966, in _open_chat_stream
+    return request_client.chat.completions.create(**stream_kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_utils\_utils.py", line 286, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\resources\chat\completions\completions.py", line 1204, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<47 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1297, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SAMSUNG\AppData\Local\hermes\installs\4f0a56b932eb082e\environments\392193eff9384acf8561bd9d2b94d730\venv\Lib\site-packages\openai\_base_client.py", line 1037, in request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.
+2026-10-18 23:57:02,601 WARNING [20261018_235509_be3c50] agent.conversation_loop: API call failed (attempt 1/3) error_type=APIConnectionError thread=Thread-59 (_chat_run_agent):32048 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b summary=Connection error.
+2026-10-18 23:57:02,601 WARNING [20261018_235509_be3c50] agent.conversation_loop: Retrying API call in 2.7571119617853683s (attempt 1/3) thread=Thread-59 (_chat_run_agent):32048 provider=custom base_url=http://127.0.0.1:6969/v1 model=qwen3-8b policy=default error=Connection error.
+
+FILE: C:\Users\SAMSUNG\AppData\Local\hermes\logs\mcp-stderr.log
+SIZE: 66579
+--- last 400 lines ---
+[🔥 HexStrike MCP] 2026-09-22 02:36:06 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:36:11 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:36:13 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 02:36:22 [INFO] [38;5;46m✅ 🎯 Successfully connected to HexStrike AI API server at http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 02:36:22 [INFO] [38;5;46m✅ 🏥 Server health status: healthy[0m
+[🔥 HexStrike MCP] 2026-09-22 02:36:22 [INFO] [38;5;46m✅ 📊 Version: 6.0.0[0m
+[🔥 HexStrike MCP] 2026-09-22 02:36:22 [WARNING] [38;5;208m⚠️ ⚠️  Not all essential tools are available on the HexStrike server[0m
+[🔥 HexStrike MCP] 2026-09-22 02:36:22 [WARNING] [38;5;208m⚠️ ❌ Missing tools: aircrack-ng, aireplay-ng, airmon-ng, airodump-ng, amass...[0m
+[🔥 HexStrike MCP] 2026-09-22 02:36:22 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 02:36:22 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 02:36:22 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 02:36:22 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+[🔥 HexStrike MCP] 2026-09-22 02:38:03 [INFO] [38;5;46m✅ Processing request of type CallToolRequest[0m
+[🔥 HexStrike MCP] 2026-09-22 02:38:03 [INFO] [38;5;46m✅ [38;5;202m🔍 Initiating Nmap scan: 127.0.0.1[0m[0m
+[🔥 HexStrike MCP] 2026-09-22 02:38:10 [INFO] [38;5;46m✅ [38;5;46m✅ Nmap scan completed successfully for 127.0.0.1[0m[0m
+[🔥 HexStrike MCP] 2026-09-22 02:39:22 [INFO] [38;5;46m✅ Processing request of type PingRequest[0m
+
+===== [2026-09-22 02:39:50] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 02:39:50] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 02:39:51 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 02:39:51 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 02:39:51 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:39:56 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:39:58 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:03 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:05 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:10 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:12 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+
+===== [2026-09-22 02:40:28] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 02:40:28] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 02:40:29 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:29 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:29 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:34 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:36 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:41 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:43 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:48 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:50 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:58 [INFO] [38;5;46m✅ 🎯 Successfully connected to HexStrike AI API server at http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:58 [INFO] [38;5;46m✅ 🏥 Server health status: healthy[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:58 [INFO] [38;5;46m✅ 📊 Version: 6.0.0[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:58 [WARNING] [38;5;208m⚠️ ⚠️  Not all essential tools are available on the HexStrike server[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:58 [WARNING] [38;5;208m⚠️ ❌ Missing tools: aircrack-ng, aireplay-ng, airmon-ng, airodump-ng, amass...[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:58 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:58 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:58 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 02:40:58 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+
+===== [2026-09-22 02:42:41] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 02:42:41] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 02:42:42 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 02:42:42 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 02:42:42 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:42:47 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:42:49 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:42:54 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:42:56 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:43:01 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:43:03 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 02:43:10 [INFO] [38;5;46m✅ 🎯 Successfully connected to HexStrike AI API server at http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 02:43:10 [INFO] [38;5;46m✅ 🏥 Server health status: healthy[0m
+[🔥 HexStrike MCP] 2026-09-22 02:43:10 [INFO] [38;5;46m✅ 📊 Version: 6.0.0[0m
+[🔥 HexStrike MCP] 2026-09-22 02:43:10 [WARNING] [38;5;208m⚠️ ⚠️  Not all essential tools are available on the HexStrike server[0m
+[🔥 HexStrike MCP] 2026-09-22 02:43:10 [WARNING] [38;5;208m⚠️ ❌ Missing tools: aircrack-ng, aireplay-ng, airmon-ng, airodump-ng, amass...[0m
+[🔥 HexStrike MCP] 2026-09-22 02:43:10 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 02:43:10 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 02:43:10 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 02:43:10 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+[🔥 HexStrike MCP] 2026-09-22 02:46:10 [INFO] [38;5;46m✅ Processing request of type PingRequest[0m
+[🔥 HexStrike MCP] 2026-09-22 02:49:14 [INFO] [38;5;46m✅ Processing request of type PingRequest[0m
+[🔥 HexStrike MCP] 2026-09-22 02:52:15 [INFO] [38;5;46m✅ Processing request of type PingRequest[0m
+
+===== [2026-09-22 02:56:56] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 02:56:56] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 02:56:59 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 02:56:59 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 02:56:59 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:04 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:06 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:11 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:13 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:18 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:20 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:28 [INFO] [38;5;46m✅ 🎯 Successfully connected to HexStrike AI API server at http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:28 [INFO] [38;5;46m✅ 🏥 Server health status: healthy[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:28 [INFO] [38;5;46m✅ 📊 Version: 6.0.0[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:28 [WARNING] [38;5;208m⚠️ ⚠️  Not all essential tools are available on the HexStrike server[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:28 [WARNING] [38;5;208m⚠️ ❌ Missing tools: aircrack-ng, aireplay-ng, airmon-ng, airodump-ng, amass...[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:28 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:28 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:28 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 02:57:28 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+[🔥 HexStrike MCP] 2026-09-22 03:00:28 [INFO] [38;5;46m✅ Processing request of type CallToolRequest[0m
+[🔥 HexStrike MCP] 2026-09-22 03:00:28 [INFO] [38;5;46m✅ [38;5;202m🔍 Initiating Nmap scan: 127.0.0.1[0m[0m
+[🔥 HexStrike MCP] 2026-09-22 03:00:29 [INFO] [38;5;46m✅ [38;5;46m✅ Nmap scan completed successfully for 127.0.0.1[0m[0m
+
+===== [2026-09-22 03:02:56] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 03:02:56] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 03:02:58 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:02:58 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:02:58 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:03 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:05 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:10 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:12 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:17 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:19 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:27 [INFO] [38;5;46m✅ 🎯 Successfully connected to HexStrike AI API server at http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:27 [INFO] [38;5;46m✅ 🏥 Server health status: healthy[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:27 [INFO] [38;5;46m✅ 📊 Version: 6.0.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:27 [WARNING] [38;5;208m⚠️ ⚠️  Not all essential tools are available on the HexStrike server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:27 [WARNING] [38;5;208m⚠️ ❌ Missing tools: aircrack-ng, aireplay-ng, airmon-ng, airodump-ng, amass...[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:27 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:27 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:27 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 03:03:27 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+
+===== [2026-09-22 03:05:57] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 03:05:57] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 03:05:58 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:05:58 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:05:58 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:03 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:05 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:10 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:12 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:17 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:19 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:26 [INFO] [38;5;46m✅ 🎯 Successfully connected to HexStrike AI API server at http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:26 [INFO] [38;5;46m✅ 🏥 Server health status: healthy[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:26 [INFO] [38;5;46m✅ 📊 Version: 6.0.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:26 [WARNING] [38;5;208m⚠️ ⚠️  Not all essential tools are available on the HexStrike server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:26 [WARNING] [38;5;208m⚠️ ❌ Missing tools: aircrack-ng, aireplay-ng, airmon-ng, airodump-ng, amass...[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:26 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:26 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:26 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 03:06:26 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+[🔥 HexStrike MCP] 2026-09-22 03:09:27 [INFO] [38;5;46m✅ Processing request of type PingRequest[0m
+
+===== [2026-09-22 03:15:15] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 03:15:15] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 03:15:17 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:17 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:17 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:22 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:24 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:29 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:31 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:36 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:38 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:45 [INFO] [38;5;46m✅ 🎯 Successfully connected to HexStrike AI API server at http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:45 [INFO] [38;5;46m✅ 🏥 Server health status: healthy[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:45 [INFO] [38;5;46m✅ 📊 Version: 6.0.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:45 [WARNING] [38;5;208m⚠️ ⚠️  Not all essential tools are available on the HexStrike server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:45 [WARNING] [38;5;208m⚠️ ❌ Missing tools: aircrack-ng, aireplay-ng, airmon-ng, airodump-ng, amass...[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:45 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:45 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:45 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 03:15:46 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+[🔥 HexStrike MCP] 2026-09-22 03:18:46 [INFO] [38;5;46m✅ Processing request of type PingRequest[0m
+[🔥 HexStrike MCP] 2026-09-22 03:21:46 [INFO] [38;5;46m✅ Processing request of type PingRequest[0m
+
+===== [2026-09-22 03:26:16] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 03:26:16] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 03:26:18 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:18 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:18 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:23 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:25 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:30 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:32 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:37 [WARNING] [38;5;208m⚠️ ⚠️  Connection test failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Read timed out. (read timeout=5)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:39 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:47 [INFO] [38;5;46m✅ 🎯 Successfully connected to HexStrike AI API server at http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:47 [INFO] [38;5;46m✅ 🏥 Server health status: healthy[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:47 [INFO] [38;5;46m✅ 📊 Version: 6.0.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:47 [WARNING] [38;5;208m⚠️ ⚠️  Not all essential tools are available on the HexStrike server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:47 [WARNING] [38;5;208m⚠️ ❌ Missing tools: aircrack-ng, aireplay-ng, airmon-ng, airodump-ng, amass...[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:47 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:47 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:47 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 03:26:47 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+
+===== [2026-09-22 03:37:32] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 03:37:32] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 03:37:37 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:37 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:37 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:37 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:39 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:39 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:41 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:41 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:43 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:43 [ERROR] [38;5;196m❌ 🚫 Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:43 [WARNING] [38;5;208m⚠️ ⚠️  Unable to connect to HexStrike AI API server at http://127.0.0.1:8888: Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:43 [WARNING] [38;5;208m⚠️ 🚀 MCP server will start, but tool execution may fail[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:43 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:43 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:43 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 03:37:43 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+
+===== [2026-09-22 03:42:12] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 03:42:12] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 03:42:15 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:15 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:15 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:15 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:17 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:17 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:19 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:19 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:21 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:21 [ERROR] [38;5;196m❌ 🚫 Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:21 [WARNING] [38;5;208m⚠️ ⚠️  Unable to connect to HexStrike AI API server at http://127.0.0.1:8888: Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:21 [WARNING] [38;5;208m⚠️ 🚀 MCP server will start, but tool execution may fail[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:21 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:21 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:21 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 03:42:21 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+
+===== [2026-09-22 03:43:02] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 03:43:02] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 03:43:03 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:03 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:03 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:03 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:05 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:05 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:07 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:07 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:09 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:09 [ERROR] [38;5;196m❌ 🚫 Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:09 [WARNING] [38;5;208m⚠️ ⚠️  Unable to connect to HexStrike AI API server at http://127.0.0.1:8888: Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:09 [WARNING] [38;5;208m⚠️ 🚀 MCP server will start, but tool execution may fail[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:09 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:09 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:09 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 03:43:09 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+
+===== [2026-09-22 03:49:54] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 03:49:54] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 03:49:58 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:49:58 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:49:58 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:49:58 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:00 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:00 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:02 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:02 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:04 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:04 [ERROR] [38;5;196m❌ 🚫 Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:04 [WARNING] [38;5;208m⚠️ ⚠️  Unable to connect to HexStrike AI API server at http://127.0.0.1:8888: Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:04 [WARNING] [38;5;208m⚠️ 🚀 MCP server will start, but tool execution may fail[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:04 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:04 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:04 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 03:50:04 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+
+===== [2026-09-22 03:57:09] starting MCP server 'qwen-test' =====
+
+===== [2026-09-22 03:57:09] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-22 03:57:13 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:13 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:13 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:13 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:15 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:15 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:17 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:17 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:19 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:19 [ERROR] [38;5;196m❌ 🚫 Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:19 [WARNING] [38;5;208m⚠️ ⚠️  Unable to connect to HexStrike AI API server at http://127.0.0.1:8888: Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:19 [WARNING] [38;5;208m⚠️ 🚀 MCP server will start, but tool execution may fail[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:19 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:19 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:19 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-22 03:57:19 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+
+===== [2026-09-28 10:49:07] starting MCP server 'qwen-test' =====
+
+===== [2026-09-28 10:49:07] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-28 10:49:09 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:09 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:09 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:09 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:11 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:11 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:13 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:13 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:15 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:15 [ERROR] [38;5;196m❌ 🚫 Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:15 [WARNING] [38;5;208m⚠️ ⚠️  Unable to connect to HexStrike AI API server at http://127.0.0.1:8888: Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:15 [WARNING] [38;5;208m⚠️ 🚀 MCP server will start, but tool execution may fail[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:15 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:15 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:15 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-28 10:49:15 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+[🔥 HexStrike MCP] 2026-09-28 12:22:38 [INFO] [38;5;46m✅ Processing request of type CallToolRequest[0m
+[🔥 HexStrike MCP] 2026-09-28 12:22:38 [INFO] [38;5;46m✅ 🏥 Checking HexStrike AI server health[0m
+[🔥 HexStrike MCP] 2026-09-28 12:22:38 [ERROR] [38;5;196m❌ 🚫 Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-28 12:22:38 [WARNING] [38;5;208m⚠️ ⚠️  Server health check returned: unknown[0m
+[🔥 HexStrike MCP] 2026-09-28 12:23:36 [INFO] [38;5;46m✅ Processing request of type CallToolRequest[0m
+[🔥 HexStrike MCP] 2026-09-28 12:23:36 [INFO] [38;5;46m✅ ⚡ Executing command: ps aux | grep -i hexstrike; echo "---PORT CHECK---"; (ss -tlnp 2>/dev/null || netstat -tlnp 2>/dev/null) | grep 8888 || echo "no listener on 8888"; echo "---DOCKER---"; docker ps 2>/dev/null | grep -i hex || echo "no docker hexstrike"[0m
+[🔥 HexStrike MCP] 2026-09-28 12:23:36 [ERROR] [38;5;196m❌ 🚫 Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /api/command (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-28 12:23:36 [ERROR] [38;5;196m❌ ❌ Command failed: Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /api/command (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+
+===== [2026-09-28 13:52:00] starting MCP server 'qwen-test' =====
+
+===== [2026-09-28 13:52:00] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-28 13:52:04 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:04 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:04 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:04 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:06 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:06 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:08 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:08 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:10 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:10 [ERROR] [38;5;196m❌ 🚫 Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:10 [WARNING] [38;5;208m⚠️ ⚠️  Unable to connect to HexStrike AI API server at http://127.0.0.1:8888: Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:10 [WARNING] [38;5;208m⚠️ 🚀 MCP server will start, but tool execution may fail[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:10 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:10 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:10 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-28 13:52:10 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+
+===== [2026-09-28 15:07:16] starting MCP server 'qwen-test' =====
+
+===== [2026-09-28 15:07:16] starting MCP server 'hexstrike' =====
+[🔥 HexStrike MCP] 2026-09-28 15:07:19 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP Client v6.0[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:19 [INFO] [38;5;46m✅ 🔗 Connecting to: http://127.0.0.1:8888[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:19 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 1/3)[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:19 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:21 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 2/3)[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:21 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:23 [INFO] [38;5;46m✅ 🔗 Attempting to connect to HexStrike AI API at http://127.0.0.1:8888 (attempt 3/3)[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:23 [WARNING] [38;5;208m⚠️ 🔌 Connection refused to http://127.0.0.1:8888. Make sure the HexStrike AI server is running.[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:25 [ERROR] [38;5;196m❌ Failed to establish connection to HexStrike AI API Server at http://127.0.0.1:8888 after 3 attempts[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:25 [ERROR] [38;5;196m❌ 🚫 Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:25 [WARNING] [38;5;208m⚠️ ⚠️  Unable to connect to HexStrike AI API server at http://127.0.0.1:8888: Request failed: HTTPConnectionPool(host='127.0.0.1', port=8888): Max retries exceeded with url: /health (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=8888): Failed to establish a new connection: [Errno 111] Connection refused"))[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:25 [WARNING] [38;5;208m⚠️ 🚀 MCP server will start, but tool execution may fail[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:25 [WARNING] [38;5;208m⚠️ Tool already exists: httpx_probe[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:25 [INFO] [38;5;46m✅ 🚀 Starting HexStrike AI MCP server[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:25 [INFO] [38;5;46m✅ 🤖 Ready to serve AI agents with enhanced cybersecurity capabilities[0m
+[🔥 HexStrike MCP] 2026-09-28 15:07:25 [INFO] [38;5;46m✅ Processing request of type ListToolsRequest[0m
+
+===== [2026-09-28 15:23:40] starting MCP server 'qwen-test' =====
+
+===== [2026-09-28 15:27:59] starting MCP server 'qwen-test' =====
+
+===== [2026-09-28 15:31:33] starting MCP server 'qwen-test' =====
+
+===== [2026-09-28 15:52:32] starting MCP server 'qwen-test' =====
+
+===== [2026-10-05 10:42:48] starting MCP server 'qwen-test' =====
+
+===== [2026-10-05 14:20:42] starting MCP server 'qwen-test' =====
+
+===== [2026-10-12 07:09:25] starting MCP server 'qwen-test' =====
+
+2026-10-12 21:24:10,839 ===== starting MCP server 'qwen-test' =====
+
+2026-10-12 21:33:43,830 ===== starting MCP server 'qwen-test' =====
+
+2026-10-12 21:35:42,991 ===== starting MCP server 'qwen-test' =====
+
+2026-10-12 21:38:40,935 ===== starting MCP server 'qwen-test' =====
+
+2026-10-12 21:48:43,307 ===== starting MCP server 'qwen-test' =====
+
+2026-10-12 21:49:25,528 ===== starting MCP server 'qwen-test' =====
+
+2026-10-12 21:53:20,550 ===== starting MCP server 'qwen-test' =====
+
+2026-10-12 21:58:09,235 ===== starting MCP server 'qwen-test' =====
+
+2026-10-12 22:08:16,728 ===== starting MCP server 'qwen-test' =====
+
+2026-10-12 22:10:09,206 ===== starting MCP server 'qwen-test' =====
+
+2026-10-12 22:10:25,922 ===== starting MCP server 'qwen-test' =====
+
+2026-10-12 22:10:55,874 ===== starting MCP server 'qwen-test' =====
+
+2026-10-18 23:55:11,483 ===== starting MCP server 'qwen-test' =====
+
+
+========================================================================================
+WINDOWS POWERSHELL HISTORY (relevant commands only)
+========================================================================================
+History file: C:\Users\SAMSUNG\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
+Matches included: 250
+Invoke-RestMethod -Uri "http://127.0.0.1:6969/v1/models"
+hermes -m qwen3-8b
+hermes-qwen
+# Prüfen, wo die Hermes config liegt
+Get-ChildItem -Path $HOME\.hermes -Filter "config.yaml" -Recurse
+notepad "$HOME\.hermes\config.yaml"
+Get-ChildItem -Path $HOME, "$HOME\.config", "$env:APPDATA" -Recurse -Depth 4 -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -match "config\.(yaml|json)" -or $_.Name -match "hermes" } | Select-String "hexstrike" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Path -Unique
+Get-ChildItem -Path $HOME\.hermes -Force -ErrorAction SilentlyContinue
+Get-Command hermes | Select-Object -ExpandProperty Source
+Get-ChildItem -Path "$env:LOCALAPPDATA\hermes" -Recurse -File | Select-String "hexstrike" | Select-Object -ExpandProperty Path -Unique
+Get-ChildItem -Path "$env:LOCALAPPDATA\hermes" -Recurse -File | Select-Object FullName
+Get-ChildItem -Path "$HOME", "$env:LOCALAPPDATA", "$env:APPDATA" -Depth 3 -Filter "*config*.y*ml" -Recurse -ErrorAction SilentlyContinue | Select-String "hexstrike" | Select-Object -ExpandProperty Path -Unique
+Get-ChildItem -Path "$HOME", "$env:LOCALAPPDATA\hermes", "$env:APPDATA\hermes" -Depth 4 -File -ErrorAction SilentlyContinue | Select-String "mcp__hexstrike" -SimpleMatch | Select-Object -ExpandProperty Path -Unique
+Copy-Item "$env:LOCALAPPDATA\hermes\config.yaml" "$env:LOCALAPPDATA\hermes\config-hexstrike.yaml"
+notepad "$env:LOCALAPPDATA\hermes\config.yaml"
+hermes-qwen
+$ErrorActionPreference='SilentlyContinue'; Write-Host "`n===== SYSTEM =====" -ForegroundColor Cyan; Get-ComputerInfo | Select-Object WindowsProductName,WindowsVersion,OsBuildNumber,OsArchitecture,CsName,CsTotalPhysicalMemory | Format-List; Write-Host "`n===== CPU/GPU/RAM =====" -ForegroundColor Cyan; Get-CimInstance Win32_Processor | Select-Object Name,NumberOfCores,NumberOfLogicalProcessors | Format-List; Get-CimInstance Win32_VideoController | Select-Object Name,DriverVersion,AdapterRAM,VideoModeDescription | Format-List; Get-CimInstance Win32_OperatingSystem | Select-Object TotalVisibleMemorySize,FreePhysicalMemory | Format-List; Write-Host "`n===== PYTHON =====" -ForegroundColor Cyan; python --version; py --version; Write-Host "`n===== OPENVINO / PYTHON PACKAGES =====" -ForegroundColor Cyan; python -m pip show openvino openvino-genai fastapi uvicorn transformers 2>$null | Select-String '^(Name|Version|Location):'; Write-Host "`n===== HERMES PROCESSES =====" -ForegroundColor Cyan; Get-Process | Where-Object {$_.ProcessName -match 'hermes|python|uvicorn'} | Select-Object ProcessName,Id,CPU,WorkingSet,Path | Format-Table -AutoSize; Write-Host "`n===== HERMES FILES =====" -ForegroundColor Cyan; Get-ChildItem 'C:\LocalAI','C:\Users\SAMSUNG\.hermes','C:\Users\SAMSUNG\AppData\Local' -Recurse -File -ErrorAction SilentlyContinue | Where-Object {$_.FullName -match 'hermes|skill|mcp'} | Select-Object FullName,Length,LastWriteTime | Format-Table -AutoSize; Write-Host "`n===== OPENVINO PROJECT =====" -ForegroundColor Cyan; Get-ChildItem 'C:\LocalAI\qwen-openvino' -Recurse -File -ErrorAction SilentlyContinue | Select-Object FullName,Length,LastWriteTime | Format-Table -AutoSize; Write-Host "`n===== PORTS =====" -ForegroundColor Cyan; Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Sort-Object LocalPort | Select-Object LocalAddress,LocalPort,OwningProcess | Format-Table -AutoSize; Write-Host "`n===== HTTP 6969 =====" -ForegroundColor Cyan; try { Invoke-WebRequest 'http://127.0.0.1:6969/' -UseBasicParsing -TimeoutSec 3 | Select-Object StatusCode,StatusDescription,Headers | Format-List } catch { Write-Host $_.Exception.Message -ForegroundColor Yellow }; Write-Host "`n===== ENVIRONMENT (RELEVANT ONLY) =====" -ForegroundColor Cyan; Get-ChildItem Env: | Where-Object {$_.Name -match 'OLLAMA|OPENVINO|HERMES|MCP|QWEN|CUDA|ONEAPI|VIRTUAL'} | Sort-Object Name | Format-Table Name,Value -AutoSize; Write-Host "`n===== DONE =====" -ForegroundColor Green
+$ErrorActionPreference='SilentlyContinue'; Write-Host "`n===== OPENVINO PROJECT =====" -ForegroundColor Cyan; Get-ChildItem 'C:\LocalAI\qwen-openvino' -File | Select-Object Name,Length,LastWriteTime | Format-Table -AutoSize; Write-Host "`n===== HERMES ROOT =====" -ForegroundColor Cyan; Get-ChildItem $env:HERMES_HOME -Force | Select-Object Name,Mode,Length,LastWriteTime | Format-Table -AutoSize; Write-Host "`n===== HERMES AGENT ROOT =====" -ForegroundColor Cyan; Get-ChildItem "$env:HERMES_HOME\hermes-agent" -Force | Select-Object Name,Mode,Length,LastWriteTime | Format-Table -AutoSize; Write-Host "`n===== HERMES CONFIG/MCPS/SKILLS =====" -ForegroundColor Cyan; Get-ChildItem "$env:HERMES_HOME" -Recurse -File -ErrorAction SilentlyContinue | Where-Object {$_.Name -match '^(config|settings|.*mcp.*|SKILL\.md)$' -or $_.Extension -in '.toml','.yaml','.yml','.json'} | Select-Object FullName,Length,LastWriteTime | Where-Object {$_.FullName -notmatch '\\venv\\|\.hermes-runtime\\|site-packages'} | Format-Table -AutoSize; Write-Host "`n===== HERMES COMMAND =====" -ForegroundColor Cyan; Get-Command hermes -ErrorAction SilentlyContinue | Format-List Name,Source,Definition; Write-Host "`n===== DONE =====" -ForegroundColor Green
+$ErrorActionPreference='SilentlyContinue'; Write-Host "`n===== HERMES VERSION =====" -ForegroundColor Cyan; hermes --version 2>$null; Write-Host "`n===== HERMES MCP/HEXSTRIKE CONFIG =====" -ForegroundColor Cyan; Get-Content "$env:HERMES_HOME\config-hexstrike.yaml"; Write-Host "`n===== HERMES CONFIG MCP SECTION =====" -ForegroundColor Cyan; Select-String -Path "$env:HERMES_HOME\config.yaml" -Pattern 'mcp|hexstrike|server|tool|discovery' -Context 2,4; Write-Host "`n===== SKILLS (TOP LEVEL ONLY) =====" -ForegroundColor Cyan; Get-ChildItem "$env:HERMES_HOME\skills" -Directory | Select-Object Name,LastWriteTime | Format-Table -AutoSize; Write-Host "`n===== OPENVINO SERVER FUNCTIONS =====" -ForegroundColor Cyan; Select-String -Path 'C:\LocalAI\qwen-openvino\server.py' -Pattern 'FastAPI|app =|@app|def |async def |uvicorn|6969|mcp|tool|health|chat.completions' | Select-Object LineNumber,Line | Format-Table -Wrap -AutoSize; Write-Host "`n===== MCP TEST SERVER =====" -ForegroundColor Cyan; Get-Content 'C:\LocalAI\qwen-openvino\mcp_test_server.py'; Write-Host "`n===== HEXSTRIKE DISCOVERY LOCK =====" -ForegroundColor Cyan; Get-Content "$env:HERMES_HOME\.mcp-discovery.lock"; Write-Host "`n===== DONE =====" -ForegroundColor Green
+Get-Content 'C:\LocalAI\qwen-openvino\server.py' | Select-Object -Index (500..525)
+$H="$env:HERMES_HOME"
+Write-Host "`n=== HERMES PROCESSES ==="
+  Where-Object { $_.Name -match 'python|hermes' -and $_.CommandLine -match 'hermes|gateway' } |`
+Write-Host "`n=== HERMES CONFIG REFERENCES ==="
+  Select-String -Pattern 'config-hexstrike|config.yaml|--config|HERMES_HOME' -SimpleMatch -ErrorAction SilentlyContinue |`
+Write-Host "`n=== RECENT HERMES LOGS ==="
+  -Pattern 'config|tool.?search|mcp|qwen-test|hexstrike|loaded|started' ``
+  -Pattern 'tool.?search|defer|deferred|mcp-|qwen-test|hexstrike|tools=' ``
+Get-Content "$env:HERMES_HOME\config.yaml" |`
+  Select-String -Pattern 'tool_search|provider:|base_url:|default:|qwen|nous|fallback|recovery' -CaseSensitive:$false
+Get-Content "$env:HERMES_HOME\config.yaml" |`
+  Select-String -Pattern 'mcp_servers:' -Context 0,15
+(Get-Content "$env:HERMES_HOME\config.yaml" -Raw) -split "`n" |`
+$config = "$env:HERMES_HOME\config.yaml"
+(Get-Content "$env:HERMES_HOME\config.yaml" -Raw) -split "`n" |`
+hermes gateway stop
+hermes gateway run --replace
+Get-Content "$env:HERMES_HOME\logs\gateway.log" -Tail 100
+Get-Content "$env:HERMES_HOME\logs\agent.log" -Tail 100 |`
+  Select-String -Pattern 'tool_search|MCP|qwen-test|error|warning' -CaseSensitive:$false
+hermes --help | Select-String -Pattern 'profile|config'
+Get-Content "$env:HERMES_HOME\config-hexstrike.yaml" -TotalCount 35
+hermes profile --help
+hermes profile list
+hermes profile create hexstrike
+hermes profile list
+hermes -p hexstrike config
+  "$env:HERMES_HOME\profiles\hexstrike\config.yaml" ``
+  "$env:HERMES_HOME\profiles\hexstrike\config.yaml.before-hexstrike" ``
+Get-Content "$env:HERMES_HOME\profiles\hexstrike\config.yaml" -TotalCount 80
+  Qwen/OpenVINO
+  qwen-test
+  keine HexStrike-Tools
+HEXSTRIKE
+  Qwen/OpenVINO
+  qwen-test
+Get-Content "$env:HERMES_HOME\profiles\hexstrike\config.yaml" |`
+  Select-String -Pattern 'tools:|tool_search|mcp_servers:|hexstrike|qwen-test' -Context 0,12
+Get-Content "$env:HERMES_HOME\config-hexstrike.yaml" |`
+  Select-String -Pattern '^tools:|^  tool_search:|^    enabled:|^mcp_servers:|^  qwen-test:|^  hexstrike:|^    command:|^    args:|^    tools:|^      include:|^        - ' -Context 0,2
+Get-Content "$env:HERMES_HOME\profiles\hexstrike\config.yaml" -Raw
+hermes -p hexstrike config set model.default qwen2.5-coder-7b
+hermes -p hexstrike config
+$cfg = "$env:HERMES_HOME\profiles\hexstrike\config.yaml"
+if ($raw -match '(?m)^mcp_servers:') {`
+    throw "mcp_servers ist bereits im hexstrike-Profil vorhanden – nichts angehängt."`
+mcp_servers:`
+  hexstrike:`
+      - /home/einskatze/hexstrike-ai/hexstrike_env/bin/python`
+      - /home/einskatze/hexstrike-ai/hexstrike_mcp.py`
+Get-Content "$env:HERMES_HOME\profiles\hexstrike\config.yaml" |`
+  Select-String -Pattern '^tools:|^  tool_search:|^    enabled:|^mcp_servers:|^  hexstrike:|^    command:|^    args:' -Context 0,5
+wsl.exe -d kali-linux -- /home/einskatze/hexstrike-ai/hexstrike_env/bin/python -V
+wsl.exe -d kali-linux -- ls -l /home/einskatze/hexstrike-ai/hexstrike_mcp.py
+hermes -p hexstrike chat
+wsl.exe -d kali-linux -- /home/einskatze/hexstrike-ai/hexstrike_env/bin/python /home/einskatze/hexstrike-ai/hexstrike_mcp.py --server
+wsl.exe -d kali-linux -- /home/einskatze/hexstrike-ai/hexstrike_env/bin/python /home/einskatze/hexstrike-ai/hexstrike_mcp.py --help
+wsl.exe -d kali-linux -- curl -s http://127.0.0.1:8888/health
+wsl.exe -d kali-linux -- bash -lc "cd /home/einskatze/hexstrike-ai && /home/einskatze/hexstrike-ai/hexstrike_env/bin/python hexstrike_server.py"
+wsl.exe -d kali-linux -- curl -s http://127.0.0.1:8888/health
+$cfg = "$env:HERMES_HOME\profiles\hexstrike\config.yaml"
+Get-Content $cfg | Select-String -Pattern 'hexstrike:|hexstrike_mcp|--server|8888|enabled:' -Context 0,2
+wsl.exe -d kali-linux -- /home/einskatze/hexstrike-ai/hexstrike_env/bin/python /home/einskatze/hexstrike-ai/hexstrike_mcp.py --server http://127.0.0.1:8888
+$cfg = "$env:HERMES_HOME\profiles\hexstrike\config.yaml"
+  hexstrike:`
+      - /home/einskatze/hexstrike-ai/hexstrike_mcp.py`
+  hexstrike:`
+      - /home/einskatze/hexstrike-ai/hexstrike_env/bin/python`
+      - /home/einskatze/hexstrike-ai/hexstrike_mcp.py`
+    Write-Host "ALTER hexstrike-Block nicht gefunden - nichts geändert."`
+    Write-Host "HexStrike MCP-Konfiguration aktualisiert."`
+Get-Content $cfg | Select-String -Pattern 'hexstrike:|command:|hexstrike_mcp|--server|8888|kali-linux|enabled:' -Context 0,2
+$pattern = '(?ms)^  hexstrike:\r?\n.*?(?=^  [A-Za-z0-9_-]+:|\z)'
+  hexstrike:`
+      - /home/einskatze/hexstrike-ai/hexstrike_env/bin/python`
+      - /home/einskatze/hexstrike-ai/hexstrike_mcp.py`
+    throw "HexStrike-Block wurde nicht gefunden."`
+Write-Host "HexStrike MCP-Block korrigiert."
+Get-Content $cfg | Select-String -Pattern 'hexstrike:|command:|hexstrike_mcp|--server|8888|kali-linux|enabled:' -Context 0,2
+wsl.exe -d kali-linux -- /home/einskatze/hexstrike-ai/hexstrike_env/bin/python /home/einskatze/hexstrike-ai/hexstrike_mcp.py --server http://127.0.0.1:8888
+hermes -p hexstrike chat
+    -Uri "http://127.0.0.1:6969/v1/chat/completions" ``
+    -Uri "http://127.0.0.1:6969/v1/chat/completions" ``
+Test-NetConnection 127.0.0.1 -Port 6969
+cd C:\LocalAI\qwen-openvino
+Test-NetConnection 127.0.0.1 -Port 6969
+Invoke-RestMethod http://127.0.0.1:6969/v1/models | ConvertTo-Json -Depth 10
+    -Uri "http://127.0.0.1:6969/v1/chat/completions" ``
+    -Uri "http://127.0.0.1:6969/v1/chat/completions" ``
+    -Uri "http://127.0.0.1:6969/v1/chat/completions" ``
+    -Uri "http://127.0.0.1:6969/v1/chat/completions" ``
+    -Uri "http://127.0.0.1:6969/v1/chat/completions" ``
+Get-Content "$env:HERMES_HOME\profiles\hexstrike\config.yaml" |`
+    Select-String -Pattern 'qwen|model|provider|base_url|6969' -Context 2,2
+wsl.exe -d kali-linux -- /home/einskatze/hexstrike-ai/hexstrike_env/bin/python /home/einskatze/hexstrike-ai/hexstrike_mcp.py --server http://127.0.0.1:8888
+hermes -p hexstrike chat
+$cfg = "$env:HERMES_HOME\profiles\hexstrike\config.yaml"
+    -replace 'default:\s*qwen2\.5-coder-7b', 'default: qwen3-8b-agent' |`
+hermes -p hexstrike chat
+cd C:\LocalAI\qwen-openvino
+    -Uri "http://127.0.0.1:6969/v1/models" ``
+    -Uri "http://127.0.0.1:6969/v1/chat/completions" ``
+    -Uri "http://127.0.0.1:6969/v1/chat/completions" ``
+    -Uri "http://127.0.0.1:6969/v1/chat/completions" ``
+C:\LocalAI\qwen-openvino
+cd C:\LocalAI\qwen-openvino
+hermes -p hexstrike chat
+notepad C:\LocalAI\qwen-openvino\server.py
+cd C:\LocalAI\qwen-openvino
+path = Path("/mnt/data/diagnose_qwen_openvino.py")
+hermes stop
+hermes --help
+hermes gateway stop
+hf cache rm model/OpenVINO/Qwen2.5-Coder-7B-Instruct-int4-ov -y
+Remove-Item -Recurse -Force "$env:USERPROFILE\.cache\huggingface\hub\models--OpenVINO--Qwen2.5-Coder-7B-Instruct-int4-ov"
+hf cache rm model/OpenVINO/Qwen2.5-Coder-7B-Instruct-int4-ov -y
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\openvino" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force ".\openvino_model" -ErrorAction SilentlyContinue
+pip uninstall openvino openvino-genai optimum-intel -y
+pip install openvino openvino-genai
+python -c "import openvino as ov; print(ov.__version__)"
+import openvino_genai as ov_genai
+# Modell-ID vom Hugging Face Hub (z. B. Qwen oder Gemma)
+model_id = "OpenVINO/Qwen2.5-Coder-7B-Instruct-int4-ov"
+hermes --version
+hermes update
+Copy-Item "$env:LOCALAPPDATA\hermes\config.yaml" "$env:LOCALAPPDATA\hermes\config.yaml.bak"
+Get-Content "$env:LOCALAPPDATA\hermes\config.yaml" | Select-String -Pattern "plugin" -Context 2,5
+Rename-Item "$env:LOCALAPPDATA\hermes\config.yaml" "config_temp.yaml"
+hermes update
+Get-ChildItem "$env:LOCALAPPDATA\hermes"
+hermes desktop
+  base_url: http://127.0.0.1:6969/v1`
+  default: qwen3-8b`
+  - name: QWEN`
+    base_url: http://127.0.0.1:6969/v1`
+    model: qwen2.5-coder-7b`
+      qwen2.5-coder-7b:`
+mcp_servers:`
+  qwen-test:`
+    command: C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\venv\Scripts\python.exe`
+      - C:\LocalAI\qwen-openvino\mcp_test_server.py`
+'@ | Set-Content -Path "$env:LOCALAPPDATA\hermes\config.yaml" -Encoding utf8
+hermes doctor
+hermes doctor --fix
+  provider: qwen`
+  default: qwen3-8b`
+  qwen:`
+    api: http://127.0.0.1:6969/v1`
+      qwen2.5-coder-7b:`
+mcp_servers:`
+  qwen-test:`
+    command: C:\Users\SAMSUNG\AppData\Local\hermes\hermes-agent\venv\Scripts\python.exe`
+      - C:\LocalAI\qwen-openvino\mcp_test_server.py`
+'@ | Set-Content -Path "$env:LOCALAPPDATA\hermes\config.yaml" -Encoding utf8
+hermes setup
+hermes pm install --extra messaging
+hermes setup
+hermes
+cd C:\LocalAI\qwen-openvino
+hermes
+nano C:\LocalAI\qwen-openvino\server.py
+notepad C:\LocalAI\qwen-openvino\server.py
+hermes
+Invoke-RestMethod -Uri "http://127.0.0.1:6969/health"
+hermes
+cd C:\LocalAI\qwen-openvino
+curl http://127.0.0.1:6969/health
+cd .\qwen-openvino\
+curl http://127.0.0.1:6969/v1/models
+hermes setup
+hermes config set model.default gemma-4-e4b
+hermes
+hermes
+git clone https://huggingface.co/OpenVINO/Qwen3.5-4B-int4-ov
+python -c "import openvino as ov; core = ov.Core(); print('OpenVINO:', ov.__version__, '| Devices:', core.available_devices)"
+hf download OpenVINO/Qwen3.5-4B-int4-ov
+pip show openvino-genai
+pip uninstall hermes-agent -y
+python -c "import openvino as ov; import openvino_genai as og; print('OpenVINO Core:', ov.__version__); print('OpenVINO GenAI:', getattr(og, '__version__', 'installiert')); print('Verfügbare Geräte:', ov.Core().available_devices)"
+import openvino_genai as og
+python -c "import huggingface_hub as h; h.snapshot_download('OpenVINO/Qwen3.5-9B-nf4-ov', local_dir='Qwen3.5-9B-nf4-ov')"
+python -c "import huggingface_hub as h; h.snapshot_download('hemanthkandula/bge-small-en-v1.5-openvino', local_dir='models/bge-small-ov')"
+python -c "import huggingface_hub as h; h.snapshot_download('OpenVINO/bge-m3-int8-ov', local_dir='models/bge-small-ov')"
+openvino --version 
+pip show openvino
+cd .\AI_Stack\
+ls .\Qwen3.5-9B-nf4-ov\
+python serve_main.py
+curl -X POST http://127.0.0.1:8000/v1/chat/completions ``
+  -d '{\"model\": \"qwen-ov\", \"messages\": [{\"role\": \"user\", \"content\": \"Antworte kurz: Funktioniert der OpenVINO Server einwandfrei?\"}]}'
+    model = "qwen-ov"`
+        @{ role = "user"; content = "Antworte kurz: Funktioniert der OpenVINO Server einwandfrei?" }`
+(Invoke-RestMethod -Uri "http://127.0.0.1:8000/v1/chat/completions" -Method Post -ContentType "application/json" -Body $body).choices[0].message.content
+curl.exe -X POST "http://127.0.0.1:8000/v1/chat/completions" ``
+  -d '{"model": "qwen-ov", "messages": [{"role": "user", "content": "Antworte kurz: Funktioniert der OpenVINO Server einwandfrei?"}]}'
+python serve_main.py
+    model = "qwen-ov"`
+        @{ role = "user"; content = "Antworte kurz: Funktioniert der OpenVINO Server einwandfrei?" }`
+(Invoke-RestMethod -Uri "http://127.0.0.1:8000/v1/chat/completions" -Method Post -ContentType "application/json" -Body $body).choices[0].message.content
+python -c "import huggingface_hub as h; h.snapshot_download('OpenVINO/Qwen2.5-Coder-7B-Instruct-int4-ov', local_dir='Qwen2.5-Coder-7B-ov')"
+python -c "import huggingface_hub as h; h.snapshot_download('OpenVINO/Qwen2.5-Coder-7B-Instruct-int4-ov', local_dir='Qwen2.5-Coder-7B-ov')"
+python -c "import huggingface_hub as h; h.snapshot_download('OpenVINO/Qwen2.5-1.5B-Instruct-int4-ov', local_dir='Qwen2.5-1.5B-ov')"
+python serve_main.py
+New-NetFirewallRule -DisplayName "HexStrike_WSL" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
+python serve_main.py
+python serve_main.py
+python serve_main.py
+python serve_main.py
+Set-Location "C:\AI_Stack"; Get-ChildItem -Path . -Filter serve_main.py -Recurse -ErrorAction SilentlyContinue | Select-String -Pattern 'class ChatCompletionRequest|tools|tool_choice|tool_calls|chat_completions|pipe\.generate|prompt_lines|host=' -Context 2,3
+Copy-Item "C:\AI_Stack\serve_main.py" "C:\AI_Stack\serve_main.py.bak-$(Get-Date -Format yyyyMMdd-HHmmss)"
+python serve_main.py
+cd .\AI_Stack\
+curl -s http://127.0.0.1:8888/health
+python serve_main.py
+Get-Command hermes -ErrorAction SilentlyContinue
+hermes --version
+echo "=== Hermes-Befehl ==="
+command -v hermes || true
+ls -ld ~/.hermes ~/.local/bin/hermes 2>/dev/null || true
+python serve_main.py
+python serve_main.py
+python serve_main.py
+python serve_main.py
+Get-Content C:\AI_Stack\serve_main.py | Select-Object -Skip 60 -First 100
+cd .\AI_Stack\
+cd .\AI_Stack\
+py -3 C:\AI_Stack\diagnose_hermes_hexstrike.py
+python -3 C:\AI_Stack\diagnose_hermes_hexstrike.py
+python C:\AI_Stack\diagnose_hermes_hexstrike.py
+
+
+========================================================================================
+KALI / WSL DIAGNOSTICS
+========================================================================================
+COMMAND: WSL/KALI DIAGNOSTIC BATCH
+EXIT_CODE: 2
+
+[STDERR]
+bash: line 1: set: +
+: invalid option
+set: usage: set [-abefhkmnptuvxBCEHPT] [-o option-name] [--] [-] [arg ...]
+bash: line 23: syntax error near unexpected token `$'do\r''
+bash: line 23: `for host in "$WIN_HOST" 172.30.32.1; do
+'
